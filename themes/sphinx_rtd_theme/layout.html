@@ -1,0 +1,358 @@
+{# TEMPLATE VAR SETTINGS #}
+{%- set url_root = pathto('', 1) %}
+{%- if url_root == '#' %}{% set url_root = '' %}{% endif %}
+{%- if not embedded and docstitle %}
+  {%- set titlesuffix = " &mdash; "|safe + docstitle|e %}
+{%- else %}
+  {%- set titlesuffix = "" %}
+{%- endif %}
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  {{ metatags }}
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  {% block htmltitle %}
+  <title>{{ title|striptags|e }}{{ titlesuffix }}</title>
+  {% endblock %}
+
+  {# FAVICON #}
+  {% if favicon %}
+    <link rel="shortcut icon" href="{{ pathto('_static/' + favicon, 1) }}"/>
+  {% endif %}
+
+  {# CSS #}
+
+  {# OPENSEARCH #}
+  {% if not embedded %}
+    {% if use_opensearch %}
+      <link rel="search" type="application/opensearchdescription+xml" title="{% trans docstitle=docstitle|e %}Search within {{ docstitle }}{% endtrans %}" href="{{ pathto('_static/opensearch.xml', 1) }}"/>
+    {% endif %}
+
+  {% endif %}
+
+  {# RTD hosts this file, so just load on non RTD builds #}
+  {% if not READTHEDOCS %}
+    <link rel="stylesheet" href="{{ pathto('_static/' + style, 1) }}" type="text/css" />
+  {% endif %}
+
+  {% for cssfile in css_files %}
+    <link rel="stylesheet" href="{{ pathto(cssfile, 1) }}" type="text/css" />
+  {% endfor %}
+
+  {% for cssfile in extra_css_files %}
+    <link rel="stylesheet" href="{{ pathto(cssfile, 1) }}" type="text/css" />
+  {% endfor %}
+
+  {%- block linktags %}
+    {%- if hasdoc('about') %}
+        <link rel="author" title="{{ _('About these documents') }}"
+              href="{{ pathto('about') }}"/>
+    {%- endif %}
+    {%- if hasdoc('genindex') %}
+        <link rel="index" title="{{ _('Index') }}"
+              href="{{ pathto('genindex') }}"/>
+    {%- endif %}
+    {%- if hasdoc('search') %}
+        <link rel="search" title="{{ _('Search') }}" href="{{ pathto('search') }}"/>
+    {%- endif %}
+    {%- if hasdoc('copyright') %}
+        <link rel="copyright" title="{{ _('Copyright') }}" href="{{ pathto('copyright') }}"/>
+    {%- endif %}
+    <link rel="top" title="{{ docstitle|e }}" href="{{ pathto('index') }}"/>
+    {%- if parents %}
+        <link rel="up" title="{{ parents[-1].title|striptags|e }}" href="{{ parents[-1].link|e }}"/>
+    {%- endif %}
+    {%- if next %}
+        <link rel="next" title="{{ next.title|striptags|e }}" href="{{ next.link|e }}"/>
+    {%- endif %}
+    {%- if prev %}
+        <link rel="prev" title="{{ prev.title|striptags|e }}" href="{{ prev.link|e }}"/>
+    {%- endif %}
+  {%- endblock %}
+  {%- block extrahead %} {% endblock %}
+
+  {# Keep modernizr in head - http://modernizr.com/docs/#installing #}
+  <script src="{{ pathto('_static/js/modernizr.min.js', 1) }}"></script>
+
+  <style type="text/css">
+    code, .rst-content tt, .rst-content code {
+      font-size: 95%;
+    }
+    div[class^='highlight'] pre {
+      font-size: 100%;
+    }
+  </style>
+    <style type="text/css">
+
+        .navbar-fixed-top .navbar-inner, .navbar-static-top .navbar-inner {
+            box-shadow: 0px 1px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .navbar-fixed-top .navbar-inner, .navbar-fixed-bottom .navbar-inner {
+            padding-right: 0px;
+            padding-left: 0px;
+            border-radius: 0px;
+        }
+
+        .navbar-fixed-top {
+            top: 0px;
+        }
+
+        .navbar-fixed-top {
+            position: fixed;
+            right: 0px;
+            left: 0px;
+            z-index: 1030;
+            margin-bottom: 0px;
+        }
+
+        .navbar {
+            margin-bottom: 20px;
+            overflow: visible;
+        }
+
+        .navbar-fixed-top .navbar-inner, .navbar-static-top .navbar-inner {
+            border-width: 0px 0px 1px;
+        }
+
+        .navbar-inner {
+            background-color: #FAFAFA;
+            background-image: linear-gradient(to bottom, #FFF, #FFF);
+        }
+
+        .navbar-inner {
+            min-height: 40px;
+            padding-right: 20px;
+            padding-left: 20px;
+            background-color: #FAFAFA;
+            background-image: linear-gradient(to bottom, #FFF, #F2F2F2);
+            background-repeat: repeat-x;
+            border: 1px solid #D4D4D4;
+            border-radius: 4px;
+            box-shadow: 0px 1px 4px rgba(0, 0, 0, 0.067);
+        }
+
+        .navbar .nav > li > a:focus, .navbar .nav > li > a:hover {
+            color: #333;
+            text-decoration: none;
+            background-color: transparent;
+        }
+
+        .navbar .nav > li > a {
+            float: none;
+            padding: 10px 15px;
+            color: #777;
+            text-decoration: none;
+            text-shadow: 0px 1px 0px #FFF;
+        }
+
+        .nav > li > a:hover, .nav > li > a:focus {
+            text-decoration: none;
+            background-color: #EEE;
+        }
+
+        .nav > li > a {
+            display: block;
+        }
+
+        a:hover, a:focus {
+            color: #005580;
+            text-decoration: underline;
+        }
+
+        a:focus {
+            outline: thin dotted #333;
+            outline-offset: -2px;
+        }
+
+        .navbar-static-top .container, .navbar-fixed-top .container, .navbar-fixed-bottom .container {
+            width: 940px;
+        }
+
+        .navbar .nav > li {
+            float: left;
+        }
+
+        .container {
+            margin-right: auto;
+            margin-left: auto;
+        }
+
+        .navbar .nav > li > a {
+            color: #3e4d49;
+            font-size: 16px;
+            font-weight: bold;
+        }
+
+        .navbar-inner {
+            background-color: #fafafa;
+            background-image: -moz-linear-gradient(top, #ffffff, rgb(255, 255, 255));
+            background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#ffffff), to(rgb(255, 255, 255)));
+            background-image: -webkit-linear-gradient(top, #ffffff, rgb(255, 255, 255));
+            background-image: -o-linear-gradient(top, #ffffff, rgb(255, 255, 255));
+            background-image: linear-gradient(to bottom, #ffffff, rgb(255, 255, 255));
+        }
+
+        code, .rst-content tt, .rst-content code {
+            font-size: 95%;
+        }
+
+        div[class^='highlight'] pre {
+            font-size: 100%;
+        }
+
+        .wy-nav-side {
+            top: 40px;
+        }
+
+        .wy-grid-for-nav {
+            top: 40px;
+        }
+
+        h1:before, h2:before, h3:before, dt:before {
+            margin-top: -65px;
+            height: 65px;
+            display: block;
+            content: "";
+            visibility: hidden;
+        }
+
+    </style>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+<div class="navbar navbar-fixed-top">
+    <div class="navbar-inner">
+        <div class="container">
+            <div class="nav-collapse collapse">
+                <ul class="nav">
+                    <li><a href="https://ponyorm.com">Home</a></li>
+                    <li><a href="#">Documentation</a></li>
+                    <li><a href="https://editor.ponyorm.com">ER Diagram Editor</a></li>
+                    <li><a href="https://blog.ponyorm.com">Blog</a></li>
+                    <li><a href="https://ponyorm.com/license-and-pricing.html">Licensing & Pricing</a></li>
+                    <li><a href="https://ponyorm.com/about.html">About</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+  <div class="wy-grid-for-nav">
+
+    {# SIDE NAV, TOGGLES ON MOBILE #}
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          {% block sidebartitle %}
+
+          {% if logo and theme_logo_only %}
+            <a href="{{ pathto(master_doc) }}">
+          {% else %}
+            <a href="{{ pathto(master_doc) }}" class="icon icon-home"> {{ project }}
+          {% endif %}
+
+          {% if logo %}
+            {# Not strictly valid HTML, but it's the only way to display/scale it properly, without weird scripting or heaps of work #}
+            <img src="{{ pathto('_static/' + logo, 1) }}" class="logo" />
+          {% endif %}
+          </a>
+
+          {% if theme_display_version %}
+            {%- set nav_version = version %}
+            {% if READTHEDOCS and current_version %}
+              {%- set nav_version = current_version %}
+            {% endif %}
+            {% if nav_version %}
+              <div class="version">
+                {{ nav_version }}
+              </div>
+            {% endif %}
+          {% endif %}
+
+          {% include "searchbox.html" %}
+
+          {% endblock %}
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          {% block menu %}
+            {% set toctree = toctree(maxdepth=4, collapse=theme_collapse_navigation, includehidden=True) %}
+            {% if toctree %}
+                {{ toctree }}
+            {% else %}
+                <!-- Local TOC -->
+                <div class="local-toc">{{ toc }}</div>
+            {% endif %}
+          {% endblock %}
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      {# MOBILE NAV, TRIGGLES SIDE NAV ON TOGGLE #}
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="{{ pathto(master_doc) }}">{{ project }}</a>
+      </nav>
+
+
+      {# PAGE CONTENT #}
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          {% include "breadcrumbs.html" %}
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            {% block body %}{% endblock %}
+           </div>
+          </div>
+          {% include "footer.html" %}
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  {% include "versions.html" %}
+
+  {% if not embedded %}
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'{{ url_root }}',
+            VERSION:'{{ release|e }}',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'{{ '' if no_search_suffix else file_suffix }}',
+            HAS_SOURCE:  {{ has_source|lower }}
+        };
+    </script>
+    {%- for scriptfile in script_files %}
+      <script type="text/javascript" src="{{ pathto(scriptfile, 1) }}"></script>
+    {%- endfor %}
+
+  {% endif %}
+
+  {# RTD hosts this file, so just load on non RTD builds #}
+  {% if not READTHEDOCS %}
+    <script type="text/javascript" src="{{ pathto('_static/js/theme.js', 1) }}"></script>
+  {% endif %}
+
+  {# STICKY NAVIGATION #}
+  {% if theme_sticky_navigation %}
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+  {% endif %}
+
+  {%- block footer %} {% endblock %}
+
+</body>
+</html>
