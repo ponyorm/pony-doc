@@ -41,7 +41,7 @@ master_doc = 'toc'
 
 # General information about the project.
 project = u'Pony ORM'
-copyright = u'2015 Pony ORM, LLC'
+copyright = u'2016 Pony ORM, LLC'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
