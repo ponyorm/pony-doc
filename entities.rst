@@ -274,7 +274,7 @@ Additional attribute options which can be set as keyword arguments:
 
    Allows you to specify a default value for the attribute.
 
-   .. note:: Currently Pony doesn't add SQL DEFAULT clause to the column definition. Instead, it processes default values in Python. This is because the default expression can be not only a constant, but any arbitrary Python function. For example:
+   .. note:: Pony processes default values in Python, it doesn't add SQL DEFAULT clause to the column definition. This is because the default expression can be not only a constant, but any arbitrary Python function. For example:
 
       .. code-block:: python
 
@@ -286,12 +286,15 @@ Additional attribute options which can be set as keyword arguments:
              class MyEntity(db.Entity):
                  code = Required(uuid.UUID, default=uuid.uuid4)
 
+      If you need to set a default value in the database, you should use the :py:attr:`sql_default` option.
+
 
 .. py:attribute:: sql_default
 
    This option allows you to specify default SQL text which will be included to the CREATE TABLE SQL command. For example::
 
        created_at = Required(datetime, sql_default='CURRENT_TIMESTAMP')
+       closed = Required(bool, default=True, sql_default='1')
 
    Specifying ``sql_default=True`` can be convenient when you have a ``Required`` attribute and the value for it is going to be calculated in the database during the INSERT command (e.g. by a trigger). ``None`` by default.
 
