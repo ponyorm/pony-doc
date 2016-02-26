@@ -1,5 +1,5 @@
 Getting Started with Pony
-=============================
+=========================
 
 To install Pony, type the following command into the command prompt:
 
@@ -7,7 +7,7 @@ To install Pony, type the following command into the command prompt:
 
     pip install pony
 
-Pony may be installed on Python 2 beginning with version 2.6, and has no external dependencies.
+Pony can be installed on Python 2 beginning with version 2.6, and has no external dependencies.
 
 To make sure Pony has been successfully installed, launch a Python interpreter in interactive mode and type::
 
@@ -24,24 +24,18 @@ In this case you don't load all Pony's functions into the global namespace, but 
 The best way to become familiar with Pony is to play around with it in interactive mode. Let's create a sample database containing the entity class ``Person``, add three objects to it, and write a query. 
 
 
-Creating a database
------------------------------
+Creating the database object
+----------------------------
 
-Entities in Pony are connected to the database; this is why we first need to create the database object. In the Python interpreter, type::
+Entities in Pony are connected to a database. This is why we need to create the database object first. In the Python interpreter, type::
 
-    >>> db = Database('sqlite', ':memory:')
-
-This command creates the connection object for the database. Its first parameter specifies the DBMS we want to work with. Currently Pony supports 4 types of databases: ``'sqlite'``, ``'mysql'``, ``'postgresql'`` and ``'oracle'``. The subsequent parameters are specific to each DBMS; they are the same ones you would use if you were connecting to the database through the DB-API module. For sqlite, either the filename of the database or the string ':memory:' must be indicated as a parameter, depending on where the database is being created. If the database is created in-memory, it will be deleted once the interactive session in Python is closed. In order to work with a database stored in a file, you can replace the previous line with the following::
-
-    >>> db = Database('sqlite', 'test_db.sqlite', create_db=True)
-
-In this case, if the database file does not exist, it will be created. In our example, we can use a database created in-memory. 
+    >>> db = Database()
 
 
 Defining entities
--------------------------------
+-----------------
 
-Now, let's create two entities -- Person and Car. The entity Person has two attributes -- name and age, and Car has attributes make and model. The two entities have a one-to-many relationship. In the Python interpreter, type the following code:
+Now, let's create two entities -- Person and Car. The entity Person has two attributes -- name and age, and Car has attributes make and model. In the Python interpreter, type the following code:
 
 .. code-block:: python
 
@@ -57,9 +51,9 @@ Now, let's create two entities -- Person and Car. The entity Person has two attr
     ... 
     >>> 
 
-The classes that we have created are derived from ``db.Entity``. It means that they are not ordinary classes, but entities whose instances are stored in the database that the ``db`` variable points to. Pony allows you to work with several databases at the same time, but each entity belongs to one specific database. 
+The classes that we have created are derived from ``db.Entity``. It means that they are not ordinary classes, but entities. The entity instances are stored in the database that the ``db`` variable points to. Pony allows you to work with several databases at the same time, but each entity belongs to one specific database.
 
-Inside the entity ``Person`` we have created three attributes -- ``name``, ``age`` and ``cars``. ``name`` and ``age`` are mandatory attributes; in other words, they can't have the value ``None``. ``name`` is an alphanumeric attribute, while ``age`` is numeric. 
+Inside the entity ``Person`` we have created three attributes -- ``name``, ``age`` and ``cars``. The ``name`` and ``age`` are mandatory attributes. In other words, they can't have the value ``None``. The ``name`` is a string attribute, while ``age`` is numeric.
 
 The ``cars`` attribute has the type ``Car`` which means that this is a relationship. It can store a collection of instances of ``Car`` entity. ``"Car"`` is specified as a string here because we didn't declare the entity ``Car`` by that moment yet.
 
@@ -84,49 +78,59 @@ You may notice that the entity got one extra attribute named ``id``. Why did tha
 
 Each entity must contain a primary key, which allows you to distinguish one entity from another. Since we have not set the primary key manually, it was created automatically. If the primary key is created automatically, it is named ``id`` and has a numeric format. If the key is created manually, it can be named in any way and can be either numeric or text. Pony also supports compound primary keys.
 
-When the primary key is created automatically, it always has the option ``auto`` set to ``True``. It means that the value for this attribute will be assigned automatically using the database’s incremental counter or sequence.
+When the primary key is created automatically, it always has the option ``auto`` set to ``True``. It means that the value for this attribute will be assigned automatically using the database’s incremental counter or a database sequence.
+
+
+Database binding
+----------------
+
+The database object has the method ``bind()``. It is used for attaching our entities to a specific database. If you want to play with Pony in the interactive mode, you can use Sqlite database created in memory::
+
+    >>> db.bind('sqlite', ':memory:')
+
+The first parameter specifies the databse we want to work with. Currently Pony supports 4 types of databases: ``'sqlite'``, ``'mysql'``, ``'postgresql'`` and ``'oracle'``. The subsequent parameters are specific to each database. They are the same ones that you would use if you were connecting to the database through the DB-API module.
+
+For sqlite, either the filename of the database or the string ':memory:' must be indicated as a parameter, depending on where the database is being created. If the database is created in-memory, it will be deleted once the interactive session in Python is closed. In order to work with a database stored in a file, you can replace the previous line with the following::
+
+    >>> db.bind('sqlite', 'test_db.sqlite', create_db=True)
+
+In this case, if the database file does not exist, it will be created. In our example, we can use a database created in-memory.
+
+If you're using another database, you need to have a specific database adapter installed. For PostgreSQL Pony uses psycopg2. For MySQL either MySQLdb or pymysql adapter. For Oracle Pony uses the cx_Oracle adapter.
+
+Here is how you can get connected to the databases:
+
+.. code-block:: python
+
+    # SQLite
+    db.bind('sqlite', ':memory:')
+    # or
+    db.bind('sqlite', 'database_file.sqlite', create_db=True)
+
+    # PostgreSQL
+    db.bind('postgres', user='', password='', host='', database='')
+
+    # MySQL
+    db.bind('mysql', host='', user='', passwd='', db='')
+
+    # Oracle
+    db.bind('oracle', 'user/password@dsn')
+
 
 Mapping entities to database tables
------------------------------------------------
+-----------------------------------
 
-Now we need to create tables to store the objects' data. For this purpose, we need to call the following method on the ``Database`` object::
+Now we need to create database tables where we will persist our data. For this purpose, we need to call the ``generate_mapping()`` method on the ``Database`` object::
 
     >>> db.generate_mapping(create_tables=True)
 
 The parameter ``create_tables=True`` indicates that, if the tables do not already exist, then they will be created using the ``CREATE TABLE`` command.
 
-All entities connected to the database must be specified before calling ``generate_mapping()`` method.
-
-Late database binding
------------------------------------------------
-
-Starting with Pony release 0.5 there is an alternative way of specifying the database parameters. Now you can create a database object first and then, after you declare entities, bind it to a specific database::
-
-    ### module my_project.my_entities.py
-    from pony.orm import *
-
-    db = Database()
-    class Person(db.Entity):
-        name = Required(str)
-        age = Required(int)
-        cars = Set("Car")
-
-    class Car(db.Entity):
-        make = Required(str)
-        model = Required(str)
-        owner = Required(Person)
-
-    ### module my_project.my_settings.py
-    from my_project.my_entities import db
-
-    db.bind('sqlite', 'test_db.sqlite', create_db=True)
-    db.generate_mapping(create_tables=True)
-
-This way you can separate entity definition from mapping it to a particular database. It can be useful for testing.
+All entities connected to the database must be defined before calling ``generate_mapping()`` method.
 
 
 Using debug mode
------------------------------------------------
+----------------
 
 Pony allows you to see on the screen (or in a log file, if configured) the SQL commands that it sends to the database. In order to turn on this mode, type::
 
@@ -143,7 +147,7 @@ Note, that we had to specify the ``level=logging.INFO`` because the default stan
 
 
 Creating entity instances and populating the database
-------------------------------------------------------------------------------
+-----------------------------------------------------
 
 Now, let's create five objects that describe three persons and two cars, and save this information in the database. To do this, we execute the following commands::
 
@@ -157,15 +161,57 @@ Now, let's create five objects that describe three persons and two cars, and sav
 Pony does not save objects in the database as soon as they are created, instead they are saved only after the ``commit()`` command is executed. If the debug mode is turned on before executing ``commit()``, then you will see the five ``INSERT`` commands used to store the objects in the database.
 
 
+db_session
+----------
+
+When you work with Python’s interactive shell you don't need to worry about the database session because it is maintained by Pony automatically. But when you use Pony in your application, all database interactions should be done within a database session. In order to do that you need to wrap the functions that work with the database with the ``@db_session`` decorator:
+
+.. code-block:: python
+
+    @db_session
+    def print_person_name(person_id):
+        p = Person[person_id]
+        print p.name
+        # database session cache will be cleared automatically
+        # database connection will be returned to the pool
+
+    @db_session
+    def add_car(person_id, make, model):
+        Car(make=make, model=model, owner=Person[person_id])
+        # commit() will be done automatically
+        # database session cache will be cleared automatically
+        # database connection will be returned to the pool
+
+The ``@db_session`` decorator performs several very important actions upon function exit:
+
+* Performs rollback of transaction if the function raises an exception
+* Commits transaction if data was changed and no exceptions occurred
+* Returns the database connection to the connection pool
+* Clears the database session cache
+
+Even if a function just reads data and does not make any changes, it should use the ``db_session`` in order to return the connection to the connection pool.
+
+The entity instances are valid only within the ``db_session``. If you need to render an HTML template using those objects, you should do this within the db_session.
+
+Another option for working with the database is using ``db_session`` as the context manager instead of the decorator::
+
+    with db_session:
+        p = Person(name='Kate', age=33)
+        Car(make='Audi', model='R8', owner=p)
+        # commit() will be done automatically
+        # database session cache will be cleared automatically
+        # database connection will be returned to the pool
+
+
 Writing queries
---------------------------------------------
+---------------
 
 Now that we have a database with five objects saved in it, we can try some queries. For example, this is the query which returns a list of persons who are older than twenty years old::
 
     >>> select(p for p in Person if p.age > 20)
     <pony.orm.core.Query at 0x105e74d10>
 
-The ``select`` function translates the Python generator into a SQL query and returns an instance of the ``Query`` class. This SQL query will be sent to the database once we start iterating over the query. One of the ways to get the list of objects is to apply the slice operator ``[:]`` to it::
+The ``select()`` function translates the Python generator into a SQL query and returns an instance of the ``Query`` class. This SQL query will be sent to the database once we start iterating over the query. One of the ways to get the list of objects is to apply the slice operator ``[:]`` to it::
 
     >>> select(p for p in Person if p.age > 20)[:]
 
@@ -260,9 +306,8 @@ You can also run aggregate queries. Here is an example of a query which returns 
 Pony allows you to write queries that are much more complex than the ones we have examined so far. You can read more on this in later sections of this manual.
 
 
-
 Getting objects
---------------------------------------------------------------
+---------------
 
 To get an object by its primary key you specify the primary key value in square brackets::
 
@@ -297,7 +342,7 @@ You can pass an entity instance to the function ``show()`` in order to display t
 
 
 Updating an object 
------------------------------------
+------------------
 ::
 
     >>> mary.age += 1
@@ -306,49 +351,8 @@ Updating an object
 Pony keeps track of changed attributes. When the operation ``commit()`` is executed, all objects that were updated during the current transaction will be saved in the database. Pony saves only changed attributes.
 
 
-db_session
-------------------------------------------
-
-When you work with Python’s interactive shell you don't need to worry about the database session because it is maintained by Pony automatically. But when you use Pony in your application, all database interactions should be done within a database session. In order to do that you need to wrap the functions that work with the database with the ``@db_session`` decorator::
-
-    @db_session
-    def print_person_name(person_id):
-        p = Person[person_id]
-        print p.name
-        # database session cache will be cleared automatically
-        # database connection will be returned to the pool
-
-    @db_session
-    def add_car(person_id, make, model):
-        Car(make=make, model=model, owner=Person[person_id])
-        # commit() will be done automatically
-        # database session cache will be cleared automatically
-        # database connection will be returned to the pool
-
-The ``@db_session`` decorator performs several very important actions upon function exit:
-
-* Performs rollback of transaction if the function raises an exception
-* Commits transaction if data was changed and no exceptions occurred 
-* Returns the database connection to the connection pool
-* Clears the database session cache
-
-Even if a function just reads data and does not make any changes, it should use the ``db_session`` in order to return the connection to the connection pool.
-
-The entity instances are valid only within the ``db_session``. If you need to render an HTML template using those objects, you should do this within the db_session.
-
-Another option for working with the database is using ``db_session`` as the context manager instead of the decorator::
-
-    with db_session:
-        p = Person(name='Kate', age=33)
-        Car(make='Audi', model='R8', owner=p)
-        # commit() will be done automatically
-        # database session cache will be cleared automatically
-        # database connection will be returned to the pool
-
-
-
-Writing SQL manually
-------------------------------------------
+Writing raw SQL queries
+-----------------------
 
 If you need to write an SQL query manually, you can do it this way::
 
@@ -371,7 +375,7 @@ If you want to work with the database directly, avoiding entities altogether, yo
 
 
 Pony examples
-----------------------------------------------------------------------------
+-------------
 
 Instead of creating models manually, it may be easier to get familiar with Pony by importing some ready-made examples -- for instance, a simplified model of an online store. You can view the diagram for this example on the Pony website at this address: https://editor.ponyorm.com/user/pony/eStore
 
