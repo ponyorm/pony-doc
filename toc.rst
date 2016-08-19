@@ -14,3 +14,4 @@ Pony ORM
    working_with_relationships
    queries
    aggregations
+   json
