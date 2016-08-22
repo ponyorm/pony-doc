@@ -1,11 +1,11 @@
-JSON Database Support
-=====================
+JSON Data Type Support
+======================
 
 
 Overview
 --------
 
-Recently native JSON support has been added in all major database systems. JSON support introduces dynamic data structures commonly found in NoSQL databases. Usually they are used when working with highly varying data or when the exact data structure is hard to predict.
+Recently native JSON data type support has been added in all major database systems. JSON support introduces dynamic data structures commonly found in NoSQL databases. Usually they are used when working with highly varying data or when the exact data structure is hard to predict.
 
 Pony allows working with JSON data stored in your database using Python syntax.
 
@@ -230,17 +230,17 @@ Here is a query example:
 The result of such query will be an array of JSON sub-elements. With the current situation of JSON support in databases, the wildcards can be used only in the expression part of the generator expression.
 
 
-JSON in the Database
---------------------
+JSON Support in Databases
+-------------------------
 
 For storing JSON in the database Pony uses the following types:
 
- * SQLite - TEXT
+ * `SQLite <https://sqlite.org/json1.html>`_ - TEXT
 
- * Oracle - CLOB
+ * `PostgreSQL <https://www.postgresql.org/docs/current/static/functions-json.html>`_ - JSONB (binary JSON)
 
- * PostgreSQL - JSONB (binary JSON)
+ * `MySQL <https://dev.mysql.com/doc/refman/5.7/en/json.html>`_ - JSON (binary JSON, although it doesn't have 'B' in the name)
 
- * MySQL - JSON (binary JSON, although it doesn't have 'B' in the name)
+ * `Oracle <https://docs.oracle.com/database/121/ADXDB/json.htm>`_ - CLOB
 
-Starting with the version 3.9 SQLite provides the `JSON1 extension module <https://www.sqlite.org/json1.html>`_. This extension improves performance when working with JSON queries.
+Starting with the version 3.9 SQLite provides the `JSON1 extension module <https://www.sqlite.org/json1.html>`_. This extension improves performance when working with JSON queries, although Pony can work with JSON in SQLite even without this module.
