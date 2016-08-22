@@ -145,6 +145,16 @@ As it was mentioned above ``db_session`` can be used as a decorator or a context
 
    Accepts a boolean value, ``False`` by default. Allows you to set the SERIALIZABLE isolation level for a transaction.
 
+.. py:attribute:: strict
+
+   *Experimental*
+
+   When ``True`` the cache will be cleared on exiting the ``db_session``.
+
+   Normally Pony strongly advises that you work with entity objects only within the ``db_session``. But some Pony users want to access extracted objects in read-only mode even after the ``db_session`` is over. In order to provide this feature, by default, Pony doesn't purge cache on exiting from the ``db_session``. This might be handy, but in the same time, this can require more memory for keeping all objects extracted from the database in cache.
+
+   Setting ``strict=True`` clears the objects cache on exiting the ``db_session``. If you'll try to access an object after the session is over, you'll get the ``pony.orm.core.DatabaseSessionIsOver`` exception.
+
 
 
 Working with multiple databases
