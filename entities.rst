@@ -162,6 +162,7 @@ Entity attributes are specified as class attributes inside the entity class usin
 * LongStr - used for large strings
 * LongUnicode - used for large strings
 * UUID
+* Json
 
 ``buffer`` and ``bytes`` types are stored as binary (BLOB) types in the database. ``LongStr`` and ``LongUnicode``  are stored as CLOB in the database.
 
