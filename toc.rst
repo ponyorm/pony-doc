@@ -1,5 +1,5 @@
 Pony ORM
-================================
+========
 
 .. toctree::
    :maxdepth: 3
@@ -8,10 +8,11 @@ Pony ORM
    firststeps
    database
    entities
+   json
    relationships
    transactions
    working_with_entity_instances
-   working_with_relationships
    queries
+   working_with_relationships
    aggregations
-   json
+   api_reference

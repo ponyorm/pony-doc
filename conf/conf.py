@@ -28,7 +28,7 @@ import sys, os
 extensions = []
 
 # Add any paths that contain templates here, relative to this directory.
-templates_path = ['../themes/agogo/']
+#templates_path = ['../themes/agogo/']
 
 # The suffix of source filenames.
 source_suffix = '.rst'
@@ -91,19 +91,14 @@ pygments_style = 'tango'
 
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
-#html_theme = 'nature'
-html_theme = 'pony_agogo'
+html_theme = 'alabaster'
 
 # Theme options are theme-specific and customize the look and feel of a theme
 # further.  For a list of options available for each theme, see the
 # documentation.
-html_theme_options = {
-    "pagewidth" : "70em",
-    "sidebarwidth" : "20em"
-}
 
 # Add any paths that contain custom themes here, relative to this directory.
-html_theme_path = ['../themes/']
+#html_theme_path = ['../themes/']
 
 # The name for this set of Sphinx documents.  If None, it defaults to
 # "<project> v<release> documentation".
@@ -124,8 +119,7 @@ html_short_title = "Pony ORM 0.6 documentation"
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
-#html_static_path = ['_static']
-html_static_path = []
+html_static_path = ['../_static']
 
 # If not '', a 'Last updated on:' timestamp is inserted at every page bottom,
 # using the given strftime format.
@@ -220,3 +214,33 @@ htmlhelp_basename = 'ponydoc'
 #     [u'AK, AM'], 1)
 #]
 
+import alabaster
+
+html_theme_path = [alabaster.get_path()]
+extensions = ['alabaster']
+html_theme = 'alabaster'
+html_sidebars = {
+    '**': [
+        'about.html',
+        'navigation.html',
+        'relations.html',
+        'searchbox.html',
+        'donate.html',
+    ]
+}
+html_theme_options = {
+    'logo': 'logo.png',
+    'github_user': 'ponyorm',
+    'github_repo': 'pony',
+    'page_width': '1070px',
+    'sidebar_width': '270px',
+    'description': 'The Smartest Python ORM',
+    'logo_text_align': 'center',
+    #'fixed_sidebar': True,
+    'github_type': 'star',
+    'analytics_id': 'UA-38782297-1',
+    'extra_nav_links': {
+        'ponyorm.com' : 'https://ponyorm.com',
+        'Diagram Editor': 'https://editor.ponyorm.com'
+    }
+}

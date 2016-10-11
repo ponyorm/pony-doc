@@ -1,0 +1,17 @@
+dl dl pre {
+    margin-left: 0px;
+    padding-left: 10px;
+}
+
+.highlight .go {
+    color: #000000;
+    font-style: normal;
+}
+
+.blurb {
+    text-align: center
+}
+
+code.xref {
+    background-color: transparent;
+}
