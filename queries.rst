@@ -319,6 +319,7 @@ Here is the list of functions that can be used inside a generator query:
 * :py:func:`raw_sql`
 * :py:func:`select`
 * :py:func:`sum`
+* :py:func:`getattr`
 
 
 Examples:
@@ -349,6 +350,19 @@ Examples:
         FROM "Customer" "c"
         WHERE "c"."name" LIKE 'A%'
         )
+
+Using getattr()
+~~~~~~~~~~~~~~~
+
+`getattr() <https://docs.python.org/3/library/functions.html#getattr>`_ is a built-in Python function, that can be used for getting the attribute value.
+
+Example:
+
+.. code-block:: python
+
+    attr_name = 'name'
+    param_value = 'John'
+    select(c for c in Customer if getattr(c, attr_name) == param_value)
 
 
 .. _using_raw_sql_ref:

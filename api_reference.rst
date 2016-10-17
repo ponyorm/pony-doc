@@ -1357,7 +1357,7 @@ Entity methods
 Queries and functions
 ---------------------
 
-Below is the list of upper level functions defined in Pony
+Below is the list of upper level functions defined in Pony:
 
 .. py:function:: avg(gen)
 
@@ -1502,7 +1502,21 @@ This function is called automatically before executing the following functions: 
 
         get(o for o in Order if o.id == 123)
 
-    The equivalent query can be generated using the :py:meth:`~Query.get` method:
+    The equivalent query can be generated using the :py:meth:`~Query.get` method.
+
+
+.. py:function:: getattr(object, name[, default])
+
+    This is `a standard Python built-in function <https://docs.python.org/3/library/functions.html#getattr>`_, that can be used for getting the attribute value inside the query.
+
+    Example:
+
+    .. code-block:: python
+
+        attr_name = 'name'
+        param_value = 'John'
+        select(c for c in Customer if getattr(c, attr_name) == param_value)
+
 
 .. py:function:: JOIN(*args)
 
