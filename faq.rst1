@@ -1,0 +1,348 @@
+Pony ORM Advantages
+===================
+
+Pony ORM is an advanced object-relational mapper. Building Pony we have followed these core concepts:
+
+* Easiness of use, Pythonic API
+* High performance
+* Safety and reliability
+
+Tools and frameworks are often divided into two types: simple ones and powerful ones. Using a simple tool one can make a quick and easy start and build an app quite soon. However, this advantage of a simple system often turns into a disadvantage. An app created using a simple tool can reach a point where the further development is too difficult or even impossible. Having reached this borderline of complexity, the developer often has to start from scratch using a more powerful tool.
+
+Powerful tools have an advantage in this aspect. Using such a tool one can build as sophisticated system as they wish. However, the disadvantage of powerful tools is their complexity. It takes time to figure out how to create something simple.
+
+Quite often, developing a prototype of an application, we don’t know how it will evolve. Therefore it may be difficult to make choose between a simple and a powerful tool at the initial stage. If the developer chooses simplicity and the application grows fast, usually it is hard to find time for rewriting it from scratch later. As a result the developers have to reinvent the wheel and use the duct tape solutions.
+
+In Pony ORM we did our best to provide both advantages, so that the developer doesn’t have to choose between simple and powerful. Pony ORM is a mapper which ensures the low barrier to entry. Using Pony you can create an application prototype very quickly. At the same time we kept in mind that prototype development is not the end, but a starting point for further development. Pony allows you to gradually increase the level of product complexity to an unlimited extent.
+
+
+Easiness of use, Pythonic API
+-----------------------------
+
+By providing a Pythonic API, Pony facilitates fast app development. Pony is an easy to learn and easy to use library. It makes your work more productive and helps saving resources. Pony achieves the easiness of use through the following:
+
+* Compact entity definitions
+* Concise query language
+* Ability to work with Pony interactively in Python interpreter
+* Comprehensive error messages, showing the exact part where error happened in the query
+* Displaying the generated SQL in readable format with indentation
+
+All this helps the developer to focus on implementing the business logic of an application, instead of struggling with a mapper trying to understand how to get the data from the database.
+
+
+High performance
+----------------
+
+For improving performance, Pony uses caching and query optimization.
+
+Here is what Pony caches:
+
+* Translated SQL query
+* Entity instances within the database session
+* Query results within the database session
+
+Pony also can optimize SQL queries taking into account database peculiarities. Another point for optimization is that Pony provides an automatic solution for "N+1 query" problem.
+
+
+Safety and reliability
+----------------------
+
+Pony uses the concept of optimistic locking for preventing lost updates by concurrent queries.
+
+**Надежность и безопасность.**
+
+Пони использует концепцию оптимистических проверок для предотвращения потеряных изменений. Так, если два пользователя системы меняют один и тот же объект, при сохранении изменений Пони использует проверки, чтобы убедиться, что объект не был уже изменен кем то другим.
+
+Безопасность для базы данных, это в первую очередь предотвращение SQL инъекций. Пони передает все переменные запросов в виде параметров, что полностью исключает возможность SQL инъекции.
+
+Также, надежности работы в Пони способствует такие особенности как избегание "lock timeout" в SQLite и умный реконнект к базе при потере соединения.
+
+
+.. contents:: Содержание
+   :local:
+
+Основные архитектурные преимущества
+-----------------------------------
+
+Pony использует паттерн Identity Map
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+*"Человек с одними часами знает, сколько времени. Человек с двумя часами никогда не уверен, который час."*
+
+При разработке ORM обычно используются один из двух паттернов - Active Record или Identity Map.
+
+The idea behind the Identity Map pattern is that, every time we read a record from the database, we first check the Identity Map to see if the record has already been retrieved. This allows us to simply return a new reference to the in-memory record rather than creating a new object, maintaining referential integrity.
+
+A secondary benefit to the Identity Map is that, since it acts as a cache, it reduces the number of database calls needed to retrieve objects, which yields a performance enhancement.
+
+Identity Map - это паттерн, который дает возможность загрузить лишь один экземпляр объекта в память. То есть, если при первом обращении к определенному объекту ORM "поднимает" экземпляр этого объекта из базы, но все последующие запросы, которые будут приводить к получению этого объекта (даже если этот объект будет частью списка других объектов), будут всего лишь получать ссылку на уже созданный объект, а не его копию. Работает это благодаря тому, что внутри ядра ORM есть реализация этого паттерна. Контекст/сессия, перед тем, как материализовать (создать) объект с определенным Id, сначала просматривают это хранилище на предмет существования объекта, и если он не найден, регистрируют новый материализованный объект в хранилище.
+
+В противовес предыдущему паттерну, паттерн Active Record определяет, что объект сам знает, как себя извлечь из базы данных и сохранить изменения туда же. То есть объекту больше не нужны внешние "менеджеры", он сам в состоянии за себя постоять.
+
+Pony использует паттерн Identity Map, Django - ActiveRecord
+Позволяет избегать lost updates
+Не растрачивает память
+В связанных объектах на других концах - не копии, а единственный экземляр объекта
+
+Преимущества использования Identity Map:
+
+* Пони автоматически отслеживает какие объекты были изменены
+* В момент выхода из db_session, если не возникло исключений, происходит сохранение всех измененных объектов в рамках единой транзакции
+* Пользователь не обязан сам вызывать метод save() для объектов, которые нужно сохранить
+
+Поддержка целостности двунаправленных связей
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+на другом конце не копии
+4 объекта, между каждыми двумя связи (husband-wife) Пони корректно отрабатывает перебивание связей
+
+
+Read, Write bits
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Пони отслеживает какие атрибуты пользователь читал, а какие изменял
+
+save_fields
+https://code.djangoproject.com/ticket/4102
+https://docs.djangoproject.com/en/1.8/ref/models/instances/#specifying-which-fields-to-save
+
+Updating only the modified columns
+
+
+Оптимистические проверки
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Если объект не был заблокирован с помощью метода ``for_update()`` в момент извлечения из базы данных, при сохранении объекта Пони автоматически добавляет проверки старых значений атрибутов, которые были прочитаны пользователем. Это позволяет избежать потеряных изменений, когда две параллельные транзакции меняют один и тот же объект. Если другая транзакция успела произвести изменение раньше, то такая проверка это выявит и не позволит перезатереть обновленное значение.
+
+Consider basic concurrency issues. Alice pulls up a particular record on her screen. Bob does the same a moment later. Alice updates her copy and saves, then Bob does. Alice's changes are lost if the program doesn't consider this scenario.
+
+
+Множественное наследование сущностей
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Большинство ORM не поддерживает множественное наследнование. Но мы решили, что раз в самом языке Питон есть множественное наследование, то следует его поддерживать и в Пони. Пони полностью поддерживает множественное наследование.
+
+
+Отсутствие проблемы "срез объекта до базового класса"
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Пони обеспечивает автоматическое приведение базового класса к подклассу.
+Например у нас есть 3 модели - ``Person``, ``Student`` и ``Teacher``:
+
+.. code-block:: python
+
+   class Person(db.Entity):
+        id = PrimaryKey(int, auto=True)
+        name = Required(unicode)
+        age = Required(int)
+
+   class Student(Person):
+        gpa = Required(float)
+
+   class Teacher(Person):
+        degree = Required(unicode)
+
+Обе сущности - ``Teacher`` и ``Student`` наследуют от сущности ``Person`` и добавляют свои атрибуты.
+
+Допустим мы хотим выбрать все объекты типа ``Person``, имя которых начинается на букву "A":
+
+.. code-block:: python
+
+   result = Person.select(lambda p: p.name.startswith("A"))
+
+Если мы выполним подобный запрос в Django, то в результате запроса все выбранные объекты будут типа ``Person``. Даже если некоторые из них на самом деле являются объектами типа ``Teacher`` или ``Student``. Таким образом в Django нам становятся недоступны атрибуты наследуемых классов в результате запроса.
+
+В SQLAlchemy можно привести базовый класс к наследнику, но для этого нужно явно использовать функцию |with_polymorphic|. Это может быть не очень удобно, потому что во-первых об этом нужно знать, а во вторых не забыть применить там где это нужно.
+
+Pony ORM делает приведение к нужному классу автоматически.
+
+.. |with_polymorphic| raw:: html
+
+    <a href="http://docs.sqlalchemy.org/en/latest/orm/inheritance.html#basic-control-of-which-tables-are-queried" target="_blank">with_polymorphic()</a>
+
+
+PonyJS
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Современные веб-приложения часто реализуются по принципу Single Page Application и работать с бизнес-логикой приходится не только на бэкенде, но и на фронтенде. Часто на фронтенде было бы удобно иметь модели, структура которых совпадает со структурой данных бэкенда.
+
+Используя PonyJS вы можете написать запрос с помощью Pony ORM, автоматически сериализовать данные в JSON, передать их на фронтенд и работать с ними как с полноценными объектами, а затем передать изменения обратно и сохранить их в базе данных.
+
+
+
+Простота использования
+------------------------------------------------------
+
+Лаконичный декларативный язык запросов
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Генераторы и лямбды
+
+
+Агрегирующие функции самого языка (sum, min, max)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+Raw SQL
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Компактный язык описания сущностей
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+расширяемые типы (int -> ipaddr)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+Можно работать с Пони в интерактивном режиме, не нужно создавать env, делать приложения
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Фреймворк дает свободу программисту, не создавая каких-либо структурных ограничений и конвенций
+
+
+Метод .show()
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Тщательные сообщения об ошибках (урезаем traceback, формируем кусочек выражения и показываем его на экране)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Хорошая индентация SQL запросов в логе
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Атрибут лифтинг (multisets)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+In Pony, the collection attributes provide an attribute lifting capability: a collection gets its items’ attributes.
+
+>>> show(Car)
+class Car(Entity):
+    id = PrimaryKey(int, auto=True)
+    make = Required(str)
+    model = Required(str)
+    owner = Optional(Person)
+>>> p1 = Person[1]
+>>> print p1.cars.model
+Multiset({u'Camry': 1, u'Prius': 1})
+Here we print out the entity class attributes using the show() function and then print the value of the model attribute of the cars relationship attribute. The cars attribute has all the attributes of the Car entity: id, make, model and owner. In Pony we call this a Multiset and it is implemented using a dictionary. The dictionary’s key represents the value of the attribute - ‘Camry’ and ‘Prius’ in our example. And the dictionary’s value shows how many times it encounters in this collection.
+
+>>> print p1.cars.make
+Multiset({u'Toyota': 2})
+Person[1] has two Toyotas.
+
+We can iterate over the multiset:
+
+>>> for m in p1.cars.make:
+...     print m
+...
+Toyota
+Toyota
+
+Это удобно для компактного выражения запросов,
+
+   Person.select(lambda p: 'Toyota' in p.cars.model)
+
+   Person.select(lambda p: 'Toyota' in select(c.model for c in p.cars))
+
+Оба этих запроса транслируются в одинаковый по смыслу SQL.
+
+
+
+Производительность (повышает скорость работы приложения)
+----------------------------------------------------------
+
+Кеширование
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Для увеличения производительности, Пони использует кеширование на нескольких уровнях. Кешируется:
+
+1. Текст SQL запроса. Таким образом, часто запросы транслируются лишь один раз - если в запросе не меняются типы параметров, то нет необходимости выполнять трансляцию повторно.
+2. Отдельные объекты, прочитанные из базы, в пределах сессии. Это достигается с помощью использования Identity Map.
+3. Результат запроса (список объектов) в пределах сессии. Второй селект с такими же параметрами в базу не пойдет. Но если мы в этой сессии пошлем в базу изменения, то Пони сбросит кеш результата запроса, чтобы гарантированно получить из базы актуальное состояние объектов.
+
+
+Решение проблемы "N+1 запроса"
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Проблема N + 1 запроса.
+Допустим у нас есть код, который выбирает 10 автомобилей и затем в цикле печатает имена их владельцев:
+
+.. code-block:: python
+
+   cars = Car.select()[:10]
+
+   for car in cars:
+       print(car.person.name)
+
+Во многих мапперах подобный код по умолчанию сгенерирует 10 + 1 запросов в базу данных. Первый запрос для извлечения списка автомобилей и затем 10 запросов для извлечения объекта ``Person`` по одному. Итого 11 запросов.
+
+Конечно, в Django можно решить эту проблему используя метод ``prefetch_related``. Но это нужно каждый раз делать явно. Пони решает проблему N + 1 запроса автоматически.
+
+В Пони, когда выполнится первый запрос, который загружает ``cars`` для каждого значения колонки ``person`` будет создан объект Person, у которого заполнен только первичный ключ (мы называем такой объект *seed*). Когда мы в цикле пойдем по связи и попытаемся получить атрибут ``name`` для одного из объектов ``person``, то для всех сидов, созданных в результате предыдущего запроса, будет подгружены значения всех не ленивых атрибутов. Те объекты ``Person``, которые не были загружены в виде сидов на предыдущем этапе, подгружены не будут.
+
+Таким образом, мы получим все необходимые в цикле объекты одним запросом к базе.
+
+
+
+Оптимизация запросов
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+На данный момент Пони может выполнять два типа оптимизации.
+
+1. Преобразование подзапроса в JOINы. Для некоторых баз таким образом достигается значительный прирост производительности.
+2. Преобразование запроса с агрегирующим подзапросом в запрос с группировкой и секцией HAVING, но без подзапроса.
+
+
+Поддержка пула соединений
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Пони поддерживает пул соединений. После того как db_session завершена, соединение возвращается в пул и может быть использовано для другой db_session.
+
+
+Надежность работы и безопасность
+-----------------------------------------------------
+
+Подстановка параметров в запрос
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Умный реконнект
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Пони отслеживает состояние транзакции - какие данные были получены из базы и какие сохранены. И в каждый момент времени понимает, можно ли, при потере соединения, молчаливо сделать реконнект. Если в момент обнаружения обрыва соединения данные были только прочитаны из базы, Пони восстанавливает соединение, снова получает те же данные и продолжает работу. Если же в базу уже были посланы изменения, то при разрыве соединения, Пони кидает exception.
+
+
+Эффективность работы с транзакциями
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Пони обеспечивает более эффективную работу с транзакциями для PostgreSQL и SQLite.
+
+В PostgreSQL, операции начала и завершения транзакции требуют дополнительных обращений к базе данных. В то же время, эти операции избыточны, если мы только читаем из базы, но ничего в нее не пишем. Пони откладывает открытие транзакции до того момента, как в базу пойдет первый запрос на изменение данных. Поскольку PostgreSQL по умолчанию работает в режиме изоляции READ COMMITTED, это никак не изменяет уровень изоляции транзакции.
+
+У базы данных SQLite есть типичная проблема. При работе с базой SQLite из многих конкурентных процессов, часто возникает exception `OperationalError: database is locked`. Пони решает эту проблему и обеспечивают одновременную работу с базой сколь угодно большому числу параллельных процессов без возникновения этой ошибки.
+
+
+SA
+--
+The main difference between PonyORM and SQLAlchemy is that PonyORM works on a higher level of abstraction and can understand the "meaning" of a query. With SQLAlchemy when you write a query you basically write it using SQL, just using some "Python dialect" of it. You need to understand what SQL you want to get, and write corresponding Python equivalent for each SQL construction.
+
+With Pony you express the meaning of the query using Python generator syntax. After that Pony chooses a way to translate it to SQL. Depending on a database, it can choose to use subselect or join. In many cases it can transform a query with a subselect to a more efficient query with GROUP BY and HAVING, and so on.
+
+Also, Pony can automatically prevent "N+1 query" antipattern.
+
+Conceptually, SQLAlchemy is built on Relational model, while PonyORM is built on a more high-level Entity–relationship model. That mean that in the future it will be possible to add support of NoSQL databases to PonyORM. Also, there is a work in progress on adding JavaScript layer to PonyORM.
+
+
+------
+
+Часто инструменты и фреймворки делятся на два типа: простые и мощные. Используя простые инструменты можно быстро начать что то делать и быстро увидеть результат. Но часто, преимущество простой системы оборачивается недостатком. Развивая продукт, построенный с помощью простой системы наступает момент, когда дальнейшее развитие становится слишком сложным или вообще невозможным. И тогда, достигнув такой границы сложности продукта, приходится переписывать систему с нуля используя более мощные средства.
+
+У мощных средств в этом смысле есть преимущество - с их помощью можно построить сколь угодно навороченный продукт. Но недостатком таких мощных систем часто является их сложность. Они не позволяют быстро сделать что то простое.
+
+Часто при разработке прототипа мы не знаем, какое будущее ждет нашу систему. Поэтому, на начальном этапе бывает сложно сделать выбор между простым и мощным инструментом. Если разработчик выбирает простоту, и проект получает развитие, времени поменять технологию потом как правило нет. И тогда в проекте появляются велосипеды, грабли и костыли.
+
+В Pony ORM мы постарались обеспечить оба преимущества, чтобы разработчику не приходилось выбирать между простотой и мощностью. Pony ORM - это маппер, который обеспечивает низкий порог вхождения. Используя Пони можно очень быстро создать прототип приложения. В то же время, обычно на прототипе разработка не заканчивается, а только начинается. И тогда Пони позволяет постепенно наращивать сложность системы, не ставя разработчику ограничений.
+
+Pony ORM - это инструмент, который позволяет разрабатываеть продукт в стиле Lean:
+
+.. image:: images/MVP.png
+
+В то же время позволяя иметь MVP на каждом шагу:
+
+.. image:: images/mvp2.png

@@ -546,6 +546,9 @@ Using the ``composite_index()`` directive you can create a composite index for s
 
 The composite index can include a discriminator attribute used for inheritance.
 
+Using the ``composite_index()`` you can create a non-unique index. In order to define an unique index, use the ``composite_key()`` function described above.
+
+
 
 .. _attribute_types:
 

@@ -1,0 +1,60 @@
+# API командной строки
+
+python -m pony.migrate make
+python -m pony.migrate apply
+python -m pony.migrate getsql
+
+# Содержимое файла миграций
+
+## Начальная миграция
+
+from pony.orm.migrating import *
+
+prev = [] # нет предыдущей миграции
+
+def initial_state(db):
+    class Person(db.Entity):
+        name = Required(str)
+        age = Required(int)
+
+## Последующие миграции
+
+from pony.orm.migrating import *
+
+prev = ['0000_initial']
+
+operations = [
+  AddEntity('Contact', bases=(), attrs=[
+      ('type', Required(str)),
+	  ('value', Required(str))
+  ])
+  AddRelationship('Person', 'contacts', Set('Contact'), 'Contact', 'person', Required('Person'))
+]
+
+## Кастомные и дата-миграции
+
+prev = ['0001_migration_abcd']
+
+def forward(db):
+	# Работа с сущностями
+	for c in db.Contact.select(lambda c: c.type == 'tel'):
+		c.type = 'phone'
+
+	# Raw SQL
+    db.execute("""
+	   UPDATE "Contact" set "type" = 'tel' WHERE "type" = 'phone'
+	""")
+
+# Операции
+
++AddEntity(entity_name, base_names, new_attrs)
+-RemoveEntity(entity_name)
+RenameEntity(old_name, new_name)
++AddAttr(entity_name, attr_name, attr)
++RemoveAttr(entity_name, attr_name)
++RenameAttr(entity_name, old_name, new_name)
+-ModifyAttr(entity_name, attr_name, new_attr)
++AddRelation(e1_name, a1_name, attr1, e2_name, a2_name, attr2)
+-RemoveRelation(entity_name, attr_name)
+-ModifyRelation(entity_name, attr_name, new_name, new_attr, reverse_name, reverse_attr)
+
