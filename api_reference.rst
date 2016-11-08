@@ -2058,7 +2058,7 @@ The generator expression and lambda queries return an instance of the ``Query`` 
 
         .. code-block:: python
 
-            select(o.total_price for o in Order).order_by(lambda: o.customer.id)
+            select(o.total_price for o in Order).order_by(lambda o: o.customer.id)
 
         * Using a string
 
