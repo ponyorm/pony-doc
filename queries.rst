@@ -58,7 +58,7 @@ Instead of using a generator, you can write queries using the lambda function:
 
 .. code-block:: python
 
-    Customer.select(lambda: sum(c.orders.price) > 1000)
+    Customer.select(lambda c: sum(c.orders.price) > 1000)
 
 From the point of the translation the query into SQL there is no difference, if you use a generator or a lambda. The only difference is that using the lambda you can only return entity instances - there is no way to return a list of specific entity attributes or a list of tuples.
 
