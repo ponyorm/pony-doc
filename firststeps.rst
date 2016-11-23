@@ -1,13 +1,20 @@
 Getting Started with Pony
 =========================
 
+Installing
+----------
+
 To install Pony, type the following command into the command prompt:
 
 .. code-block:: text
 
     pip install pony
 
-Pony can be installed on Python 2.7 or Python 3, and has no external dependencies.
+Pony can be installed on Python 2.7 or Python 3. If you are going to work with SQLite database, you don't need to install anything else. If you wish to use another database, you need to have the corresponding database driver installed:
+
+* PostgreSQL: `psycopg <http://initd.org/psycopg/docs/install.html#installation>`_ or `psycopg2cffi <https://pypi.python.org/pypi/psycopg2cffi>`_
+* MySQL: `MySQL-python <https://pypi.python.org/pypi/MySQL-python/>`_ or `PyMySQL <https://pypi.python.org/pypi/PyMySQL>`_
+* Oracle: `cx_Oracle <https://pypi.python.org/pypi/cx_Oracle>`_
 
 To make sure Pony has been successfully installed, launch a Python interpreter in interactive mode and type:
 
