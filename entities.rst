@@ -415,4 +415,4 @@ By default, for storing many-to-many relationships between ``Student`` and ``Cou
         students = Set(Student, column="student_id")
         PrimaryKey(name, semester)
 
-You can find more examples of mapping customization in `an example which comes with Pony ORM package <https://github.com/ponyorm/pony/blob/orm/pony/orm/examples/university.py>`_
+You can find more examples of mapping customization in `an example which comes with Pony ORM package <https://github.com/ponyorm/pony/blob/orm/pony/orm/examples/university1.py>`_
