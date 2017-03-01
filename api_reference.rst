@@ -1787,9 +1787,9 @@ This function is called automatically before executing the following functions: 
     The equivalent query can be generated using the :py:meth:`~Query.sum` method.
 
 
-.. _query_result:
+.. _query_object:
 
-Query result
+Query object
 ------------
 
 The generator expression and lambda queries return an instance of the ``Query`` class. Below is the list of methods that you can apply to it.

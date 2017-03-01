@@ -205,7 +205,7 @@ You can find more queries in the `pony.orm.examples.estore`_ module.
 Query object methods
 --------------------
 
-See the :ref:`Query result <query_result>` part of the API Reference for details.
+See the :ref:`Query result <query_object>` part of the API Reference for details.
 
 
 
