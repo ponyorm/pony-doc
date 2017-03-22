@@ -1438,6 +1438,12 @@ Below is the list of upper level functions defined in Pony:
 
         select(o for o in Order).order_by(desc(Order.date_shipped))
 
+    The same example, using ``lambda``:
+
+    .. code-block:: python
+
+        select(o for o in Order).order_by(lambda o: desc(o.date_shipped))
+
 
 .. py:function:: distinct(gen)
 
@@ -2055,13 +2061,13 @@ The generator expression and lambda queries return an instance of the ``Query`` 
 
         .. code-block:: python
 
-            select(o for o in Order).order_by(lambda o: (o.customer.name, o.date_shipped))
+            select(o for o in Order).order_by(lambda o: (o.customer.name, desc(o.date_shipped)))
 
         If the lambda has a parameter (``o`` in our example) then ``o`` represents the result of the ``select`` and will be applied to it. If you specify the lambda without a parameter, then inside lambda you have access to all names defined inside the query:
 
         .. code-block:: python
 
-            select(o.total_price for o in Order).order_by(lambda o: o.customer.id)
+            select(o.total_price for o in Order).order_by(lambda: o.customer.id)
 
         * Using a string
 
@@ -2069,7 +2075,7 @@ The generator expression and lambda queries return an instance of the ``Query`` 
 
         .. code-block:: python
 
-            select(o for o in Order).order_by("o.customer.name, o.date_shipped")
+            select(o for o in Order).order_by("o.customer.name, desc(o.date_shipped)")
 
 
     .. py:method:: page(pagenum, pagesize=10)

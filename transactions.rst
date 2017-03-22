@@ -107,10 +107,31 @@ Pony caches data at several stages for increasing performance. It caches:
 * Query results. Pony returns the query result from the cache if the same query is called with the same parameters once again. This cache is cleared once any of entity instances is changed. This cache is cleared on leaving the :py:func:`db_session` scope or on transaction rollback.
 
 
-Using db_session with generator functions
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Using db_session with generator functions or coroutines
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-The :py:func:`@db_session` decorator can be used with generators too.
+
+The :py:func:`@db_session` decorator can be used with generator functions or coroutines too. The generator function is the function that contains the ``yield`` keyword inside it. The coroutine is a function which is defined using the ``async def`` or decorated with ``@asyncio.coroutine``.
+
+If inside such a generator function or coroutine you'll try to use the ``db_session`` context manager, it will not work properly, because in Python context managers cannot intercept generator suspension. Instead, you need to wrap you generator function or coroutine with the ``@db_session`` decorator.
+
+In other words, don't do this:
+
+.. code-block:: python
+
+    def my_generator(x):
+        with db_session: # it won't work here!
+            obj = MyEntity.get(id=x)
+            yield obj
+
+Do this instead:
+
+.. code-block:: python
+
+    @db_session
+    def my_generator( x ):
+        obj = MyEntity.get(id=x)
+        yield obj
 
 With regular functions, the :py:func:`@db_session` decorator works as a scope. When your program leaves the :py:func:`db_session` scope, Pony finishes the transaction by performing commit (or rollback) and clears the db_session cache.
 
