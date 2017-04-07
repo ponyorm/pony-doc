@@ -309,7 +309,7 @@ The example below raises the ``ConstraintError`` exception on an attempt to dele
         group = Required(Group)
 
 
-In the following example, if a ``Person`` object has a related ``Parssport`` object, then if you'll try to delete the ``Person`` object, the ``Passport`` object will be deleted as well due to cascade delete:
+In the following example, if a ``Person`` object has a related ``Passport`` object, then if you'll try to delete the ``Person`` object, the ``Passport`` object will be deleted as well due to cascade delete:
 
 .. code-block:: python
 
