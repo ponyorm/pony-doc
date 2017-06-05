@@ -222,6 +222,8 @@ Generally the optimistic concurrency control increases the performance because t
 
 However, if contention for writing data is frequent, the cost of repeatedly restarting transactions hurts performance. In this case the pessimistic locking can be more appropriate.
 
+   If you need to turn the optimistic concurrency control for an attribute off, you can use the :ref:`volatile option <volatile_option>`.
+
 
 Pessimistic locking
 -------------------

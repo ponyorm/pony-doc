@@ -842,6 +842,7 @@ Below you can find the list of available options:
 
     (*str*) Used for many-to-many relationship only in order to specify the name of the intermediate table.
 
+.. _volatile_option:
 
 .. option:: volatile
 
@@ -849,7 +850,7 @@ Below you can find the list of available options:
 
     The ``volatile=True`` option can be combined with the ``sql_default`` option if the value for this attribute is going to be both created and updated by the database.
 
-    You can get the exception ``UnrepeatableReadError: Value ... was updated outside of current transaction`` if another transaction changes the value of the attribute which is used in the current transaction. Pony notifies about it because this situation can break the business logic of the application. If you don't want Pony to protect you from such concurrent modifications you can set ``volatile=True`` for the attribute.
+    You can get the exception ``UnrepeatableReadError: Value ... was updated outside of current transaction`` if another transaction changes the value of the attribute which is used in the current transaction. Pony notifies about it because this situation can break the business logic of the application. If you don't want Pony to protect you from such concurrent modifications you can set ``volatile=True`` for the attribute. This will turn the optimistic concurrency control off.
 
 
 .. _collection_attribute_methods:
