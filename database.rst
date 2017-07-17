@@ -44,7 +44,7 @@ Before we can map entities to the database, we need to connect to establish conn
 
 .. code-block:: python
 
-    db.bind('postgres', user='', password='', host='', database='')
+    db.bind(provider='postgres', user='', password='', host='', database='')
 
 The first parameter of this method is the name of the database provider. The database provider is a module which resides in the ``pony.orm.dbproviders`` package and which knows how to work with a particular database. After the database provider name you should specify parameters which will be passed to the ``connect()`` method of the corresponding DBAPI driver.
 
@@ -54,7 +54,7 @@ When you just start working with Pony, you can use the SQLite database. This dat
 
 .. code-block:: python
 
-    db.bind('sqlite', 'database.sqlite', create_db=True)
+    db.bind(provider='sqlite', filename='database.sqlite', create_db=True)
 
 When ``create_db=True``, Pony will create the database file if it doesn't exist. If it already exists, Pony will use it.
 
@@ -62,7 +62,7 @@ For in-memory database use this:
 
 .. code-block:: python
 
-  db.bind('sqlite', ':memory:')
+  db.bind(provider='sqlite', filename=':memory:')
 
 There is no need in the parameter ``create_db`` when creating an in-memory database. This is a convenient way to create a SQLite database when playing with Pony in the interactive shell, but you should remember, that the entire in-memory database will be lost on program exit.
 
@@ -70,10 +70,10 @@ Here are the examples of binding to other databases:
 
 .. code-block:: python
 
-    db.bind('sqlite', ':memory:')
-    db.bind('sqlite', 'filename', create_db=True)
-    db.bind('mysql', host='', user='', passwd='', db='')
-    db.bind('oracle', 'user/password@dsn')
+    db.bind(provider='sqlite', filename=':memory:')
+    db.bind(provider='sqlite', filename='filename', create_db=True)
+    db.bind(provider='mysql', host='', user='', passwd='', db='')
+    db.bind(provider='oracle', user='', password='', dsn='')
 
 You can find more details on working with each database in the API Reference:
 

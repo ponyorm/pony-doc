@@ -19,10 +19,11 @@ Database class
 
 
     .. py:method:: bind(provider, *args, **kwargs)
+    .. py:method:: bind(*args, **kwargs)
 
         Bind entities to a database.
 
-        :param str provider: the name of the database provider. The database provider is a module which resides in the ``pony.orm.dbproviders`` package. It knows how to work with a particular database. After the database provider name you should specify parameters which will be passed to the ``connect()`` method of the corresponding DBAPI driver. Pony comes with the following providers: "sqlite", "postgres", "mysql", "oracle".
+        :param str provider: the name of the database provider. The database provider is a module which resides in the ``pony.orm.dbproviders`` package. It knows how to work with a particular database. After the database provider name you should specify parameters which will be passed to the ``connect()`` method of the corresponding DBAPI driver. Pony comes with the following providers: "sqlite", "postgres", "mysql", "oracle". This parameter can be used as a keyword argument as well.
         :param args: parameters required by the database driver.
         :param kwargs: parameters required by the database driver.
 
@@ -38,6 +39,23 @@ Database class
             db.bind('mysql', host='', user='', passwd='', db='')
             db.bind('oracle', 'user/password@dsn')
 
+        Also you can use keyword arguments for passing the parameters:
+
+        .. code-block:: python
+
+            db.bind(provider='sqlite', filename=':memory:')
+            db.bind(provider='sqlite', filename='db.sqlite', create_db=True)
+            db.bind(provider='postgres', user='', password='', host='', database='')
+            db.bind(provider='mysql', host='', user='', passwd='', db='')
+            db.bind(provider='oracle', user='', password='', dsn='')
+
+        This allows keeping these parameters in a dict:
+
+        .. code-block:: python
+
+            db_params = dict(provider='postgres', host='...', port=...,
+                             user='...', password='...')
+            db.bind(**db_params)
 
 
     .. py:method:: commit()
@@ -280,11 +298,11 @@ Using SQLite database is the easiest way to work with Pony because there is no n
 
 .. code-block:: python
 
-    db.bind('sqlite', filename, create_db=False)
+    db.bind(provider='sqlite', filename='db.sqlite', create_db=False)
 
-.. py:method:: db.bind('sqlite', filename, create_db=False)
+.. py:method:: db.bind(provider, filename, create_db=False)
 
-    :param str 'sqlite': tells Pony that we use the SQLite database.
+    :param str provider: Should be 'sqlite' for the SQLite database.
     :param str filename: the name of the file where SQLite will store the data. The filename can be absolute or relative. If you specify a relative path, that path is appended to the directory path of the Python file where this database was created (and not to the current working directory). This is because sometimes a programmer doesn’t have the control over the current working directory (e.g. in mod_wsgi application). This approach allows the programmer to create applications which consist of independent modules, where each module can work with a separate database. When working in the interactive shell, Pony requires that you to always specify the absolute path of the storage file.
     :param bool create_db: ``True`` means that Pony will try to create the database if such filename doesn’t exists.  If such filename exists, Pony will use this file.
 
@@ -294,7 +312,7 @@ Normally SQLite database is stored in a file on disk, but it also can be stored 
 
 .. code-block:: python
 
-      db.bind('sqlite', ':memory:')
+      db.bind(provider='sqlite', filename=':memory:')
 
 There is no need in the parameter ``create_db`` when creating an in-memory database.
 
@@ -309,7 +327,7 @@ Pony uses psycopg2 driver in order to work with PostgreSQL. In order to bind the
 
 .. code-block:: python
 
-    db.bind('postgres', user='', password='', host='', database='')
+    db.bind(provider='postgres', user='', password='', host='', database='')
 
 All the parameters that follow the Pony database provider name will be passed to the ``psycopg2.connect()`` method. Check the `psycopg2.connect documentation <http://initd.org/psycopg/docs/module.html#psycopg2.connect>`_ in order to learn what other parameters you can pass to this method.
 
@@ -320,7 +338,7 @@ MySQL
 
 .. code-block:: python
 
-    db.bind('mysql', host='', user='', passwd='', db='')
+    db.bind(provider='mysql', host='', user='', passwd='', db='')
 
 Pony tries to use the MySQLdb driver for working with MySQL. If this module cannot be imported, Pony tries to use pymysql. See the `MySQLdb <http://mysql-python.sourceforge.net/MySQLdb.html#functions-and-attributes>`_ and `pymysql <https://pypi.python.org/pypi/PyMySQL>`_ documentation for more information regarding these drivers.
 
@@ -331,7 +349,7 @@ Oracle
 
 .. code-block:: python
 
-    db.bind('oracle', 'user/password@dsn')
+    db.bind(provider='oracle', user='', password='', dsn='')
 
 Pony uses the **cx_Oracle** driver for connecting to Oracle databases. More information about the parameters which you can use for creating a connection to Oracle database can be found `here <http://cx-oracle.sourceforge.net>`_.
 
