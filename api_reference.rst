@@ -674,9 +674,16 @@ For the ``Decimal`` type you can specify precision and scale:
     class Product(db.Entity):
         price = Required(Decimal, 10, 2)   #  DECIMAL(10, 2)
 
+Also you can use ``precision`` and ``scale`` options:
 
-Datetime and time precision
-```````````````````````````
+.. code-block:: python
+
+    class Product(db.Entity):
+        price = Required(Decimal, precision=10, scale=2)   #  DECIMAL(10, 2)
+
+
+Datetime, time and timedelta precision
+``````````````````````````````````````
 
 The ``datetime`` and ``time`` types accept a positional argument which specifies the column's precision. By default it is equal to 6 for most databases.
 
@@ -688,6 +695,13 @@ For MySQL database the default value is 0. Before the MySQL version 5.6.4, the `
 
     class Action(db.Entity):
         dt = Required(datetime, 6)
+
+The same, using the ``precision`` option:
+
+.. code-block:: python
+
+    class Action(db.Entity):
+        dt = Required(datetime, precision=6)
 
 
 Keyword argument options
@@ -762,7 +776,7 @@ Below you can find the list of available options:
 
 
 .. option:: max_len
-    (*numeric*) Sets the maximum length for string attributes.
+    (*int*) Sets the maximum length for string attributes.
 
 
 .. option:: min
@@ -787,6 +801,10 @@ Below you can find the list of available options:
 
     See also :ref:`volatile option <volatile_option>`.
 
+
+.. option:: precision
+
+    (*int*) Sets the precision for ``Decimal``, ``time``, ``timedelta``, ``datetime`` attribute types.
 
 .. option:: py_check
 
@@ -813,6 +831,10 @@ Below you can find the list of available options:
 
     (*str*) Used for a symmetric relationship if the entity has a composite primary key. Allows you to specify the name of the database columns for the intermediate table.
 
+
+.. option:: scale
+
+    (*int*) Sets the scale for ``Decimal`` attribute types.
 
 .. option:: size
 
