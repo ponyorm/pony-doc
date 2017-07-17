@@ -656,6 +656,13 @@ String types can accept a positional argument which specifies the max length of 
     class Person(db.Entity):
         name = Required(str, 40)   #  VARCHAR(40)
 
+Also you can use the ``max_len`` option:
+
+.. code-block:: python
+
+    class Person(db.Entity):
+        name = Required(str, max_len=40)   #  VARCHAR(40)
+
 
 Decimal scale and precision
 ```````````````````````````
@@ -752,6 +759,10 @@ Below you can find the list of available options:
 .. option:: max
 
     (*numeric*) Allows specifying the maximum allowed value for numeric attributes (int, float, Decimal). If you will try to assign the value that is greater than the specified max value, you'll get the ``ValueError`` exception.
+
+
+.. option:: max_len
+    (*numeric*) Sets the maximum length for string attributes.
 
 
 .. option:: min
