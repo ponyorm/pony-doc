@@ -101,15 +101,15 @@ The database object has the :py:func:`Database.bind()` method. It is used for at
 
 .. code-block:: python
 
-    >>> db.bind('sqlite', ':memory:')
+    >>> db.bind(provider='sqlite', filename=':memory:')
 
-The first parameter specifies the database type that we want to work with. Currently Pony supports 4 database types: ``'sqlite'``, ``'mysql'``, ``'postgresql'`` and ``'oracle'``. The subsequent parameters are specific to each database. They are the same ones that you would use if you were connecting to the database through the DB-API module.
+Currently Pony supports 4 database types: ``'sqlite'``, ``'mysql'``, ``'postgresql'`` and ``'oracle'``. The subsequent parameters are specific to each database. They are the same ones that you would use if you were connecting to the database through the DB-API module.
 
 For SQLite, either the database filename or the string ':memory:' must be specified as the parameter, depending on where the database is being created. If the database is created in-memory, it will be deleted once the interactive session in Python is over. In order to work with the database stored in a file, you can replace the previous line with the following:
 
 .. code-block:: python
 
-    >>> db.bind('sqlite', 'database.sqlite', create_db=True)
+    >>> db.bind(provider='sqlite', filename='database.sqlite', create_db=True)
 
 In this case, if the database file does not exist, it will be created. In our example, we can use a database created in-memory.
 
@@ -120,18 +120,18 @@ Here is how you can get connected to the databases:
 .. code-block:: python
 
     # SQLite
-    db.bind('sqlite', ':memory:')
+    db.bind(provider='sqlite', filename=':memory:')
     # or
-    db.bind('sqlite', 'database_file.sqlite', create_db=True)
+    db.bind(provider='sqlite', filename='database.sqlite', create_db=True)
 
     # PostgreSQL
-    db.bind('postgres', user='', password='', host='', database='')
+    db.bind(provider='postgres', user='', password='', host='', database='')
 
     # MySQL
-    db.bind('mysql', host='', user='', passwd='', db='')
+    db.bind(provider='mysql', host='', user='', passwd='', db='')
 
     # Oracle
-    db.bind('oracle', 'user/password@dsn')
+    db.bind(provider='oracle', user='', password='', dsn='')
 
 
 Mapping entities to database tables
