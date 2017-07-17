@@ -745,9 +745,18 @@ Below you can find the list of available options:
 
     (*int*) This parameter is used for fine tuning the threshold used for the N+1 problem solution.
 
+
 .. option:: nullable
 
     (*bool*) ``True`` allows the column to be ``NULL`` in the database. Most likely you don't need to specify this option because Pony sets it to the most appropriate value by default.
+
+.. _optimistic_option:
+
+.. option:: optimistic
+
+    (*bool*) ``True`` means this attribute will be used for automatic optimistic checks, :ref:`see Optimistic concurrency control <optimistic_control>` section. By default, this option is set to ``True`` for all attributes except attributes of ``float`` type - for ``float`` type attributes it is set to ``False`` by default.
+
+    See also :ref:`volatile option <volatile_option>`.
 
 
 .. option:: py_check
@@ -851,6 +860,8 @@ Below you can find the list of available options:
     The ``volatile=True`` option can be combined with the ``sql_default`` option if the value for this attribute is going to be both created and updated by the database.
 
     You can get the exception ``UnrepeatableReadError: Value ... was updated outside of current transaction`` if another transaction changes the value of the attribute which is used in the current transaction. Pony notifies about it because this situation can break the business logic of the application. If you don't want Pony to protect you from such concurrent modifications you can set ``volatile=True`` for the attribute. This will turn the optimistic concurrency control off.
+
+    See also :ref:`optimistic option <optimistic_option>`.
 
 
 .. _collection_attribute_methods:

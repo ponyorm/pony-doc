@@ -200,6 +200,7 @@ Also there are three corresponding functions of the :py:class:`Database` object:
 
 If you work with one database, there is no difference between using an upper level or the :py:class:`Database` object methods.
 
+.. _optimistic_control:
 
 Optimistic concurrency control
 ------------------------------
@@ -222,7 +223,7 @@ Generally the optimistic concurrency control increases the performance because t
 
 However, if contention for writing data is frequent, the cost of repeatedly restarting transactions hurts performance. In this case the pessimistic locking can be more appropriate.
 
-   If you need to turn the optimistic concurrency control for an attribute off, you can use the :ref:`volatile option <volatile_option>`.
+If you need to turn the optimistic concurrency control for an attribute off, you can use the :ref:`optimistic option <optimistic_option>` or :ref:`volatile option <volatile_option>`.
 
 
 Pessimistic locking
