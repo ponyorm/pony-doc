@@ -1984,8 +1984,6 @@ The generator expression and lambda queries return an instance of the ``Query`` 
 
         Filter the result of a query. The conditions which are passed as parameters to the ``filter()`` method will be translated into the WHERE section of the resulting SQL query.
 
-        Before Pony ORM release 0.5 the ``filter()`` method affected the underlying query updating the query in-place, but since the release 0.5 it creates and returns a new ``Query`` object with the applied conditions.
-
         The number of ``filter()`` arguments should correspond to the query result. The ``filter()`` method can receive a lambda expression with a condition:
 
         .. code-block:: python
