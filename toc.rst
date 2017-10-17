@@ -8,11 +8,11 @@ Pony ORM
    firststeps
    database
    entities
-   json
    relationships
    transactions
    working_with_entity_instances
    queries
    working_with_relationships
    aggregations
+   json
    api_reference
