@@ -1355,7 +1355,7 @@ Entity methods
             >>> c1.to_dict()
 
             {'address': u'address 1',
-            'country': u'USA',
+            'country': u'US',
             'email': u'john@example.com',
             'id': 1,
             'name': u'John Smith',
@@ -1368,7 +1368,7 @@ Entity methods
             >>> c1.to_dict(exclude='password')
 
             {'address': u'address 1',
-            'country': u'USA',
+            'country': u'US',
             'email': u'john@example.com',
             'id': 1,
             'name': u'John Smith'}
@@ -1979,36 +1979,49 @@ The generator expression and lambda queries return an instance of the ``Query`` 
 
 
     .. py:method:: filter(lambda, globals=None, locals=None)
-                   filter(str)
+                   filter(str, globals=None, locals=None)
                    filter(**kwargs)
 
-        Filter the result of a query. The conditions which are passed as parameters to the ``filter()`` method will be translated into the WHERE section of the resulting SQL query.
+        Filter the result of a query. The conditions which are passed as parameters to the ``filter()`` method will be translated into the WHERE section of the resulting SQL query. The result of the ``filter()`` method is a new query object with the specified additional condition.
 
-        The number of ``filter()`` arguments should correspond to the query result. The ``filter()`` method can receive a lambda expression with a condition:
+        Typically you specify the lambda function as the argument of the ``filter()`` method. The argument of the lambda function represents the result of the query. You can use an arbitrary name for this argument:
 
         .. code-block:: python
 
-            q = select(p for p in Product)
-            q2 = q.filter(lambda x: x.price > 100)
+            q = select(p.name for p in Product).filter(lambda x: x.upper() == 'IPAD')
+
+        In the example above ``x`` argument corresponds to the result of the query ``p.name``. This way you cannot access the ``p`` variable in the filter method, only ``p.name``. When you need to access the original query loop variable, you can use the :py:meth:`~Query.where` method instead.
+
+        If the query returns a tuple, the number of ``filter()`` lambda function arguments should correspond to the query result:
+
+        .. code-block:: python
 
             q = select((p.name, p.price) for p in Product)
-            q2 = q.filter(lambda n, p: n.name.startswith("A") and p > 100)
-
-        Also the ``filter()`` method can receive a text string where you can specify just the expression:
-
-        .. code-block:: python
-
-            q = select(p for p in Product)
-            x = 100
-            q2 = q.filter("p.price > x")
+            q2 = q.filter(lambda n, p: n.startswith('iPad') and p < 500)
 
         Another way to filter the query result is to pass parameters in the form of named arguments:
 
         .. code-block:: python
 
-            q = select(p for p in Product)
-            q2 = q.filter(price=100, name="iPod")
+            q = select(o.customer for o in Order if o.total_price > 1000)
+            q2 = q.filter(name="John Smith", country="UK")
 
+        Keyword arguments can be used only when the result of the query is an object. In the example above it is an object of the ``Customer`` type.
+
+        Also the ``filter()`` method can receive a text definition of a lambda function. It can be used when you combine the condition from text pieces:
+
+        .. code-block:: python
+
+            q = select(p for p in Product)
+            x = 100
+            q2 = q.filter("lambda p: p.price > x")
+
+        In the example above the ``x`` variable in lambda refers to ``x`` defined before. The more secure solution is to specify the dictionary with values as a second argument of the ``filter()`` method:
+
+        .. code-block:: python
+
+            q = select(p for p in Product)
+            q2 = q.filter("lambda p: p.price > x", {"x": 100})
 
     .. py:method:: first()
 
@@ -2265,6 +2278,65 @@ The generator expression and lambda queries return an instance of the ``Query`` 
 
 
     .. py:method:: to_json(include=(), exclude=(), converter=None, with_schema=True, schema_hash=None)
+
+
+    .. py:method:: where(lambda, globals=None, locals=None)
+                   where(str, globals=None, locals=None)
+                   where(**kwargs)
+
+        Filter the result of a query. The conditions which are passed as parameters to the ``where()`` method will be translated into the WHERE section of the resulting SQL query. The result of the ``where()`` method is a new query object with the specified additional condition.
+
+        This method is similar to the :py:meth:`~Query.filter` method.
+
+        Typically you specify the lambda function as the argument of the ``where()`` method. The arguments of the lambda function refer to the query loop variables, and should have the same names.
+
+        .. code-block:: python
+
+            q = select(p.name for p in Product).where(lambda p: p.price > 1000)
+
+        In the example above ``p`` argument corresponds to the ``p`` variable of the query.
+
+        In the ``where()`` method the lambda arguments can refer to all loop variables from the original query:
+
+        .. code-block:: python
+
+            q = select(c.name for c in Customer for o in c.orders if o.total_price > 1000)
+            q2 = q.where(lambda c, o: c.country == 'US' and o.state == 'DELIVERED')
+
+        When the query is written using the ``select()`` method of an entity, the argument of lambda function should be the first letter of the entity name in the lower case:
+
+        .. code-block:: python
+
+            q = Product.select(lambda p: p.price > 1000)
+            q2 = q.where(lambda p: p.name.startswith('A'))
+
+        Another way to filter the query result is to pass parameters in the form of named arguments:
+
+        .. code-block:: python
+
+            q = select(o.customer for o in Order if o.total_price > 1000)
+            q2 = q.where(state == 'DELIVERED')
+
+        The ``state`` keyword attribute refers to the ``state`` attribute of the ``Order`` object.
+
+        Keyword arguments can be used only when the result of the query is an object. In the example above it is an object of the ``Customer`` type.
+
+        Also the ``where()`` method can receive an expression text instead of lambda function. It can be used when you combine the condition from text pieces:
+
+        .. code-block:: python
+
+            q = select(p for p in Product)
+            x = 100
+            q2 = q.where("p.price > x")
+
+        The more secure solution is to specify the dictionary with values as a second argument of the ``where()`` method:
+
+        .. code-block:: python
+
+            q = select(p for p in Product)
+            q2 = q.where("p.price > x", {"x": 100})
+
+
 
 
     .. py:method:: without_distinct()
