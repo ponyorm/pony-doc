@@ -2295,6 +2295,8 @@ The generator expression and lambda queries return an instance of the ``Query`` 
                    where(str, globals=None, locals=None)
                    where(**kwargs)
 
+        *New in version 0.7.3*
+
         Filter the result of a query. The conditions which are passed as parameters to the ``where()`` method will be translated into the WHERE section of the resulting SQL query. The result of the ``where()`` method is a new query object with the specified additional condition.
 
         This method is similar to the :py:meth:`~Query.filter` method.
