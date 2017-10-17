@@ -369,7 +369,7 @@ Usually Pony saves objects in the database in the same order as they are created
 
     db.bind('sqlite', ':memory:')
     db.generate_mapping(create_tables=True)
-    sql_debug(True)
+    set_sql_debug(True)
 
     with db_session:
         john = TeamMember(name='John')

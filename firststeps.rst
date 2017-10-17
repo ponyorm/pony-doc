@@ -151,11 +151,11 @@ All entities connected to the database must be defined before calling :py:meth:`
 Using the debug mode
 --------------------
 
-Using the :py:func:`sql_debug` function, you can see the SQL commands that Pony sends to the database. In order to turn the debug mode on, type the following:
+Using the :py:func:`set_sql_debug` function, you can see the SQL commands that Pony sends to the database. In order to turn the debug mode on, type the following:
 
 .. code-block:: python
 
-    >>> sql_debug(True)
+    >>> set_sql_debug(True)
 
 If this command is executed before calling the :py:meth:`~Database.generate_mapping` method, then during the creation of the tables, you will see the SQL code used to generate them.
 

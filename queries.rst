@@ -143,7 +143,7 @@ Here are the entity definitions:
         name = Required(str, unique=True)
         products = Set(Product)
 
-    sql_debug(True)
+    set_sql_debug(True)
     db.bind('sqlite', 'estore.sqlite', create_db=True)
     db.generate_mapping(create_tables=True)
 

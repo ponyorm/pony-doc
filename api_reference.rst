@@ -1835,9 +1835,10 @@ This function is called automatically before executing the following functions: 
         2 |Mary|22
 
 
-.. py:function:: sql_debug(value)
+.. py:function:: set_sql_debug(value)
 
     Prints SQL statements being sent to the database to the console or to a log file.
+    Previous name ``sql_debug`` is deprecated.
 
     :param bool value: sets debugging on/off
 
