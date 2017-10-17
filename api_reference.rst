@@ -1438,6 +1438,16 @@ Below is the list of upper level functions defined in Pony:
 
     The equivalent query can be generated using the :py:meth:`~Query.avg` method.
 
+.. py:function:: coalesce(*args)
+
+    :param list args: list of arguments
+
+    Returns the first non-null expression in a list.
+
+    .. code-block:: python
+
+        select(coalesce(p.phone, 'UNKNOWN') for p in Person)
+
 .. py:function:: concat(*args)
 
     :param list args: list of arguments
