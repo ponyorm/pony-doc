@@ -1835,12 +1835,15 @@ This function is called automatically before executing the following functions: 
         2 |Mary|22
 
 
-.. py:function:: set_sql_debug(value)
+.. py:function:: set_sql_debug(value=True, show_values=None)
 
     Prints SQL statements being sent to the database to the console or to a log file.
     Previous name ``sql_debug`` is deprecated.
 
     :param bool value: sets debugging on/off
+    :param bool show_values: when ``True``, query parameters will be logged in addition to the SQL text (* new in version 0.7.3)
+
+    Before version 0.7.3 it was a global flag. Now, in multi-threaded application, it should be set for each thread separately.
 
     By default Pony sends debug information to stdout. If you have the `standard Python logging <https://docs.python.org/3.6/howto/logging.html>`_ configured, Pony will use it instead. Here is how you can store debug information in a file:
 
