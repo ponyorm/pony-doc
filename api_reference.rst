@@ -763,6 +763,10 @@ Below you can find the list of available options:
     If you need to set a default value in the database, you should use the ``sql_default`` option.
 
 
+.. option:: fk_name
+
+    (*str*) Applies for ``Required`` and ``Optional`` relationship attributes, allows to specify the name of the foreign key in the database.
+
 .. option:: index
 
     (*bool|str*) Allows to control index creation for this column. ``index=True`` - the index will be created with the default name. ``index='index_name'`` - create index with the specified name. ``index=False`` – skip index creation. If no 'index' option is specified then Pony still creates index for foreign keys using the default name.
