@@ -1857,6 +1857,25 @@ This function is called automatically before executing the following functions: 
     Note, that we had to specify the ``level=logging.INFO`` because the default standard logging level is ``WARNING`` and Pony uses the ``INFO`` level for its messages by default. Pony uses two loggers: ``pony.orm.sql`` for SQL statements that it sends to the database and ``pony.orm`` for all other messages.
 
 
+.. py:function:: sql_debugging(value=True, show_values=None)
+
+    Context manager, use it for enabling/disabling logging SQL queries for a specific part of your code. If you need to turn on debugging for the whole db_session, use the similar parameters of :py:func:`db_session` decorator or context manager.
+
+    :param bool value: sets debugging on/off
+    :param bool show_values: when ``True``, query parameters will be logged in addition to the SQL text (* new in version 0.7.3)
+
+    .. code-block:: python
+
+        with sql_debugging:  # turn debug on for a specific query
+            result = Person.select()
+
+        with sql_debugging(show_values=True):  # log with query params
+            result = Person.select()
+
+        with sql_debugging(False):  # turn debug off for a specific query
+            result = Person.select()
+
+
 .. py:function:: sum(gen)
 
     Return the sum of all values selected from the database.
