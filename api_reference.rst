@@ -357,18 +357,19 @@ Pony uses the **cx_Oracle** driver for connecting to Oracle databases. More info
 Transactions & db_session
 -------------------------
 
-.. py:decorator:: db_session(allowed_exceptions=[], immediate=False, retry=0, retry_exceptions=[TransactionError], serializable=False, strict=False, sql_debug=None, show_values=None)
+.. py:decorator:: db_session(allowed_exceptions=[], immediate=False, optimistic=True, retry=0, retry_exceptions=[TransactionError], serializable=False, strict=False, sql_debug=None, show_values=None)
 
     Used for establishing a database session.
 
     :param list allowed_exceptions: a list of exceptions which when occurred do not cause the transaction rollback. Can be useful with some web frameworks which trigger HTTP redirect with the help of an exception.
     :param bool immediate: tells Pony when start a transaction with the database. Some databases (e.g. SQLite, Postgres) start a transaction only when a modifying query is sent to the database(UPDATE, INSERT, DELETE) and don’t start it for SELECTs. If you need to start a transaction on SELECT, then you should set ``immediate=True``. Usually there is no need to change this parameter.
+    :param bool optimistic: ``True`` by default. When ``optimistic=False``, no optimistic checks will be added to queries within this db_session *(new in version 0.7.3)*
     :param int retry: specifies the number of attempts for committing the current transaction. This parameter can be used with the ``@db_session`` decorator only. The decorated function should not call ``commit()`` or ``rollback()`` functions explicitly. When this parameter is specified, Pony catches the ``TransactionError`` exception (and all its descendants) and restarts the current transaction. By default Pony catches the ``TransactionError`` exception only, but this list can be modified using the ``retry_exceptions`` parameter.
     :param list|callable retry_exceptions: a list of exceptions which will cause the transaction restart. By default this parameter is equal to ``[TransactionError]``. Another option is using a callable which returns a boolean value. This callable receives the only parameter - an exception object. If this callable returns ``True`` then the transaction will be restarted.
     :param bool serializable: allows setting the SERIALIZABLE isolation level for a transaction.
     :param bool strict: when ``True`` the cache will be cleared on exiting the ``db_session``. If you'll try to access an object after the session is over, you'll get the ``pony.orm.core.DatabaseSessionIsOver`` exception. Normally Pony strongly advises that you work with entity objects only within the ``db_session``. But some Pony users want to access extracted objects in read-only mode even after the ``db_session`` is over. In order to provide this feature, by default, Pony doesn't purge cache on exiting from the ``db_session``. This might be handy, but in the same time, this can require more memory for keeping all objects extracted from the database in cache.
-    :param bool sql_debug: *(new in version 0.7.3)* when ``sql_debug=True`` - log SQL statements to the console or to a log file. When ``sql_debug=False`` - suppress logging, if it was set globally by :py:func:`set_sql_debug`. The default value ``None`` means it doesn't change the global debug mode.
-    :param bool show_values: *(new in version 0.7.3)* when ``True``, query parameters will be logged in addition to the SQL text.
+    :param bool sql_debug: when ``sql_debug=True`` - log SQL statements to the console or to a log file. When ``sql_debug=False`` - suppress logging, if it was set globally by :py:func:`set_sql_debug`. The default value ``None`` means it doesn't change the global debug mode. *(new in version 0.7.3)*
+    :param bool show_values: when ``True``, query parameters will be logged in addition to the SQL text. *(new in version 0.7.3)*
 
 
     Can be used as a decorator or a context manager. When the session ends it performs the following actions:
