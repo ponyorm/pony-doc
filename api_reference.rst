@@ -300,11 +300,12 @@ Using SQLite database is the easiest way to work with Pony because there is no n
 
     db.bind(provider='sqlite', filename='db.sqlite', create_db=False)
 
-.. py:method:: db.bind(provider, filename, create_db=False)
+.. py:method:: db.bind(provider, filename, create_db=False, timeout=5.0)
 
     :param str provider: Should be 'sqlite' for the SQLite database.
-    :param str filename: the name of the file where SQLite will store the data. The filename can be absolute or relative. If you specify a relative path, that path is appended to the directory path of the Python file where this database was created (and not to the current working directory). This is because sometimes a programmer doesn’t have the control over the current working directory (e.g. in mod_wsgi application). This approach allows the programmer to create applications which consist of independent modules, where each module can work with a separate database. When working in the interactive shell, Pony requires that you to always specify the absolute path of the storage file.
+    :param str filename: The name of the file where SQLite will store the data. The filename can be absolute or relative. If you specify a relative path, that path is appended to the directory path of the Python file where this database was created (and not to the current working directory). This is because sometimes a programmer doesn’t have the control over the current working directory (e.g. in mod_wsgi application). This approach allows the programmer to create applications which consist of independent modules, where each module can work with a separate database. When working in the interactive shell, Pony requires that you to always specify the absolute path of the storage file.
     :param bool create_db: ``True`` means that Pony will try to create the database if such filename doesn’t exists.  If such filename exists, Pony will use this file.
+    :param float timeout: The ``timeout`` parameter specifies how long the connection should wait for the lock to go away until raising an exception. The default is 5.0 (five seconds). *(New in version 0.7.3)*
 
 Normally SQLite database is stored in a file on disk, but it also can be stored entirely in memory. This is a convenient way to create a SQLite database when playing with Pony in the interactive shell, but you should remember, that the entire in-memory database will be lost on program exit. Also you should not work with the same in-memory SQLite database simultaneously from several threads because in this case all threads share the same connection due to SQLite limitation.
 
