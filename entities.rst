@@ -370,6 +370,7 @@ If you need to set your own column name, use the option ``column``:
         _table_ = "person_table"
         name = Required(str, column="person_name")
 
+Also you can specify the ``_table_options_`` for the table. It can be used when you need to set options like ``ENGINE`` or ``TABLESPACE``. See :ref:`Entity options <entity_options>` part of the API reference for more detail.
 
 For composite attributes use the option ``columns`` with the list of the column names specified:
 
