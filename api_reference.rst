@@ -784,6 +784,7 @@ Below you can find the list of available options:
 
 
 .. option:: max_len
+
     (*int*) Sets the maximum length for string attributes.
 
 
