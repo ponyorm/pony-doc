@@ -1073,13 +1073,19 @@ To-many attributes have methods that provide a convenient way of querying data. 
             g = Group[101]
             g.students.select(lambda student: student.gpa > 3)
 
+.. _entity_options:
 
 Entity options
 ~~~~~~~~~~~~~~
 
-.. py:attribute:: _table_
+.. py:function:: composite_index(attrs)
 
-    Specify the name of mapped table in the database. See more information in the :ref:`Mapping customization <mapping_customization>` section.
+    Combine an index from multiple attributes. :ref:`Link <composite_indexes>`.
+
+
+.. py:function:: composite_key(attrs)
+
+    Combine a secondary key from multiple attributes. :ref:`Link <composite_keys>`.
 
 
 .. py:attribute:: _discriminator_
@@ -1092,14 +1098,28 @@ Entity options
     Combine a primary key from multiple attributes. :ref:`Link <composite_keys>`.
 
 
-.. py:function:: composite_key(attrs)
+.. py:attribute:: _table_
 
-    Combine a secondary key from multiple attributes. :ref:`Link <composite_keys>`.
+    Specify the name of mapped table in the database. See more information in the :ref:`Mapping customization <mapping_customization>` section.
 
 
-.. py:function:: composite_index(attrs)
+.. py:attribute:: _table_options_
 
-    Combine an index from multiple attributes. :ref:`Link <composite_indexes>`.
+    All parameters specified here will be added as plain text at the end of the `CREATE TABLE` command. Example:
+
+    .. code-block:: python
+
+        class MyEntity(db.Entity):
+            id = PrimaryKey(int)
+            foo = Required(str)
+            bar = Optional(int)
+
+            _table_options_ = {
+                'ENGINE': 'InnoDB',
+                'TABLESPACE': 'my_tablespace',
+                'ENCRYPTION': "'N'",
+                'AUTO_INCREMENT': 10
+            }
 
 
 .. _entity_hooks:
