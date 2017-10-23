@@ -1039,6 +1039,16 @@ To-many attributes have methods that provide a convenient way of querying data. 
             g.students.order_by(lambda s: s.name).limit(3, offset=3)
 
 
+    .. py:method:: sort_by(attr|lambda)
+
+        Return an ordered collection. For a collection, the ``sort_by`` method works the same way as :py:func:`order_by`.
+
+        .. code-block:: python
+
+            g.students.sort_by(Student.name).page(2, pagesize=3)
+            g.students.sort_by(lambda s: s.name).limit(3, offset=3)
+
+
     .. py:method:: page(pagenum, pagesize=10)
 
         This query can be used for displaying the second page of group 101 student's list ordered by the ``name`` attribute:
@@ -1539,7 +1549,7 @@ Below is the list of upper level functions defined in Pony:
 
 .. py:function:: desc(attr)
 
-    This function is used inside :py:meth:`~Query.order_by` for ordering in descending order.
+    This function is used inside :py:meth:`~Query.order_by` and `~Query.sort_by` for ordering in descending order.
 
     :param attribute attr: Entity attribute
 
@@ -2178,7 +2188,17 @@ The generator expression and lambda queries return an instance of the ``Query`` 
                    order_by(lambda[, globals[, locals])
                    order_by(str)
 
-        Order the results of a query. There are several options available:
+        .. note:: The behavior of ``order_by`` is going to be slightly changed in the next release (0.8). In order to use the previous behaviour you can use ``sort_by`` method which currently works as an alias to ``order_by``. Just rename all ``order_by`` method calls to :py:func:`sort_by` in your project to be sure that future change will not affect your application.
+
+        Order the results of a query. Currently ``order_by`` and ``sort_by`` methods work in the same way - they are applied to the result of the previous query. Starting with the release 0.8 the behavior of the ``order_by`` method will be changed. The ``order_by`` method will reference the loop variable, not the result of the query.
+
+        .. code-block:: python
+
+            query = select(o.customer for o in Order)
+            query1 = query.order_by(lambda o: o.total_price)  # starting from the release 0.8
+            query2 = query.sort_by(lambda c: c.name)  # current behavior of order_by and sort_by function
+
+        There are several options available:
 
         * Using entity attributes
 
@@ -2206,7 +2226,9 @@ The generator expression and lambda queries return an instance of the ``Query`` 
 
             select(o for o in Order).order_by(lambda o: (o.customer.name, desc(o.date_shipped)))
 
-        If the lambda has a parameter (``o`` in our example) then ``o`` represents the result of the ``select`` and will be applied to it. If you specify the lambda without a parameter, then inside lambda you have access to all names defined inside the query:
+        If the lambda has a parameter (``o`` in our example) then ``o`` represents the result of the ``select`` and will be applied to it. Starting from the release 0.8 it will represent the iterator loop variable from the original query. If you want to continue using the result of a query for ordering, you need to use the ``sort_by`` method instead.
+
+        If you specify the lambda without a parameter, then inside lambda you have access to all names defined inside the query:
 
         .. code-block:: python
 
@@ -2219,6 +2241,59 @@ The generator expression and lambda queries return an instance of the ``Query`` 
         .. code-block:: python
 
             select(o for o in Order).order_by("o.customer.name, desc(o.date_shipped)")
+
+
+    .. py:method:: sort_by(attr1 [, attr2, ...])
+                   sort_by(pos1 [, pos2, ...])
+                   sort_by(lambda[, globals[, locals])
+                   sort_by(str)
+
+        Order the results of a query. Currently ``order_by`` and ``sort_by`` methods work in the same way - they are applied to the result of the previous query. Starting with the release 0.8 the behavior of the ``order_by`` method will be changed. The ``order_by`` method will reference the loop variable, not the result of the query.
+
+        .. code-block:: python
+
+            query = select(o.customer for o in Order)
+            query1 = query.order_by(lambda o: o.total_price)  # starting from the release 0.8
+            query2 = query.sort_by(lambda c: c.name)  # current behavior of order_by and sort_by function
+
+        There are several options available:
+
+        * Using entity attributes
+
+        .. code-block:: python
+
+            select(o.customer for o in Order).sort_by(Customer.name)
+
+        For ordering in descending order, use the function :py:func:`desc()`:
+
+        .. code-block:: python
+
+            select(o.customer for o in Order).sort_by(desc(Customer.name))
+
+        * Using position of query result variables
+
+        .. code-block:: python
+
+            select((o.customer.name, o.total_price) for o in Order).sort_by(-2, 1)
+
+        The position numbers start with 1. Minus means sorting in the descending order. In this example we sort the result by the total price in descending order and by the customer name in ascending order.
+
+        * Using lambda
+
+
+        .. code-block:: python
+
+            select(o.customer for o in Order).sort_by(lambda c: (c.name, desc(c.country)))
+
+        Lambda inside the ``sort_by`` method receives the result of the previous query.
+
+        * Using a string
+
+        This approach is similar to the previous one, but you specify the body of a lambda as a string:
+
+        .. code-block:: python
+
+            select(o for o in Order).sort_by("o.customer.name, desc(o.date_shipped)")
 
 
     .. py:method:: page(pagenum, pagesize=10)
