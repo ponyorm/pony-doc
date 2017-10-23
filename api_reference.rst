@@ -367,8 +367,8 @@ Transactions & db_session
     :param list|callable retry_exceptions: a list of exceptions which will cause the transaction restart. By default this parameter is equal to ``[TransactionError]``. Another option is using a callable which returns a boolean value. This callable receives the only parameter - an exception object. If this callable returns ``True`` then the transaction will be restarted.
     :param bool serializable: allows setting the SERIALIZABLE isolation level for a transaction.
     :param bool strict: when ``True`` the cache will be cleared on exiting the ``db_session``. If you'll try to access an object after the session is over, you'll get the ``pony.orm.core.DatabaseSessionIsOver`` exception. Normally Pony strongly advises that you work with entity objects only within the ``db_session``. But some Pony users want to access extracted objects in read-only mode even after the ``db_session`` is over. In order to provide this feature, by default, Pony doesn't purge cache on exiting from the ``db_session``. This might be handy, but in the same time, this can require more memory for keeping all objects extracted from the database in cache.
-    :param bool sql_debug: prints SQL statements being sent to the database to the console or to a log file (* new in version 0.7.3)
-    :param bool show_values: when ``True``, query parameters will be logged in addition to the SQL text (* new in version 0.7.3)
+    :param bool sql_debug: *(new in version 0.7.3)* when ``sql_debug=True`` - log SQL statements to the console or to a log file. When ``sql_debug=False`` - suppress logging, if it was set globally by :py:func:`set_sql_debug`. The default value ``None`` means it doesn't change the global debug mode.
+    :param bool show_values: *(new in version 0.7.3)* when ``True``, query parameters will be logged in addition to the SQL text.
 
 
     Can be used as a decorator or a context manager. When the session ends it performs the following actions:
@@ -1843,7 +1843,7 @@ This function is called automatically before executing the following functions: 
     Previous name ``sql_debug`` is deprecated.
 
     :param bool value: sets debugging on/off
-    :param bool show_values: when ``True``, query parameters will be logged in addition to the SQL text (* new in version 0.7.3)
+    :param bool show_values: when ``True``, query parameters will be logged in addition to the SQL text *(new in version 0.7.3)*
 
     Before version 0.7.3 it was a global flag. Now, in multi-threaded application, it should be set for each thread separately.
 
@@ -1862,7 +1862,7 @@ This function is called automatically before executing the following functions: 
     Context manager, use it for enabling/disabling logging SQL queries for a specific part of your code. If you need to turn on debugging for the whole db_session, use the similar parameters of :py:func:`db_session` decorator or context manager.
 
     :param bool value: sets debugging on/off
-    :param bool show_values: when ``True``, query parameters will be logged in addition to the SQL text (* new in version 0.7.3)
+    :param bool show_values: when ``True``, query parameters will be logged in addition to the SQL text *(new in version 0.7.3)*
 
     .. code-block:: python
 
