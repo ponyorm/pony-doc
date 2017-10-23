@@ -1446,6 +1446,14 @@ Below is the list of upper level functions defined in Pony:
 
     The equivalent query can be generated using the :py:meth:`~Query.avg` method.
 
+.. py:function:: between(x, a, b)
+
+    This function will be translated into ``x BETWEEN a AND b``. It is equal to the condition ``x >= a AND x <= b``.
+
+    .. code-block:: python
+
+        select(p for p in Person if between(p.age, 18, 65))
+
 .. py:function:: coalesce(*args)
 
     :param list args: list of arguments
