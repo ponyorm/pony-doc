@@ -2422,9 +2422,6 @@ The generator expression and lambda queries return an instance of the ``Query`` 
         If the query returns no items, the query result will be 0.
 
 
-    .. py:method:: to_json(include=(), exclude=(), converter=None, with_schema=True, schema_hash=None)
-
-
     .. py:method:: where(lambda, globals=None, locals=None)
                    where(str, globals=None, locals=None)
                    where(**kwargs)
