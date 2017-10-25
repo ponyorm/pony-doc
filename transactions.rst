@@ -351,3 +351,17 @@ Transaction isolation levels and database peculiarities
 See the :ref:`API Reference <transaction_isolation_levels>` for more details on this topic.
 
 
+Handling disruptions
+--------------------
+
+On ``db.bind(...)`` Pony opens connection to the database and then store it in a thread-local connection pool.
+
+When application code enters db_session and makes a query, Pony takes already opened connection from the pool and use it. After exiting db_session, connection is returned to the pool. If you enable logging, you will see ``RELEASE CONNECTION`` message from Pony. It means that the connection is not closed, but was returned to the connection pool.
+
+Sometimes connection is closed by database server, for example when database server was restarted. After that a previously opened connection becomes invalid. If such disconnect happens, most probably it was between db_sessions, but sometimes it may happens right during active db_session. Pony is prepared to such situations, and may reconnect to the database in an intelligent matter.
+
+If Pony executes a query and receive an error that connection is closed, it check the state of db_session in order to know was any updates already sent to the database during current db_session. If db_session just started, or all queries were just SELECTs, Pony assumes it is safe to re-open connection under the hood and continue the same db_session as if nothing unusual is happened. But if some updates were already sent to the database during active db_session before the previous connection becomes invalid, it means these updates are lost, and it is impossible to continue this db_session. Then Pony throws an exception.
+
+But in most cases Pony is able to reconnect silently so application code don't notice anything.
+
+If you want to close connection which is stored in the connection pool, you can perform ``db.disconnect()`` call, see :py:meth:`~Database.disconnect`. In multi-threaded application this needs to be done in each thread separately.
