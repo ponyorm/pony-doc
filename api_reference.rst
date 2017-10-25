@@ -1550,7 +1550,7 @@ Below is the list of upper level functions defined in Pony:
 
 .. py:function:: desc(attr)
 
-    This function is used inside :py:meth:`~Query.order_by` and `~Query.sort_by` for ordering in descending order.
+    This function is used inside :py:meth:`~Query.order_by` and :py:meth:`~Query.sort_by` for ordering in descending order.
 
     :param attribute attr: Entity attribute
 
@@ -2062,46 +2062,82 @@ The generator expression and lambda queries return an instance of the ``Query`` 
                    filter(str, globals=None, locals=None)
                    filter(**kwargs)
 
-        Filter the result of a query. The conditions which are passed as parameters to the ``filter()`` method will be translated into the WHERE section of the resulting SQL query. The result of the ``filter()`` method is a new query object with the specified additional condition.
+        Filters the result of a query. The conditions which are passed as parameters to the ``filter()`` method will be translated into the WHERE section of the resulting SQL query. The result of the ``filter()`` method is a new query object with the specified additional condition.
 
-        Typically you specify the lambda function as the argument of the ``filter()`` method. The argument of the lambda function represents the result of the query. You can use an arbitrary name for this argument:
+        .. note:: This method is similar to the :py:meth:`~Query.where` method. The difference is that the ``filter()`` condition applies to items returned from the previous query, whereas ``where()`` condition applies to the loop variables from the original generator expression. Example:
 
-        .. code-block:: python
+            .. code-block:: python
 
-            q = select(p.name for p in Product).filter(lambda x: x.upper() == 'IPAD')
+                q = select(o.customer for o in Order)
 
-        In the example above ``x`` argument corresponds to the result of the query ``p.name``. This way you cannot access the ``p`` variable in the filter method, only ``p.name``. When you need to access the original query loop variable, you can use the :py:meth:`~Query.where` method instead.
+                # c refers to o.customer
+                q2 = q.filter(lambda c: c.name.startswith('John'))
 
-        If the query returns a tuple, the number of ``filter()`` lambda function arguments should correspond to the query result:
+                # o refers to Order object
+                q3 = q2.where(lambda o: o.total_price > 1000)
 
-        .. code-block:: python
+            The name of lambda function argument in ``filter()`` may be arbitrary, but in ``where()`` the name of lambda argument should exactly match the name of the loop variable.
 
-            q = select((p.name, p.price) for p in Product)
-            q2 = q.filter(lambda n, p: n.startswith('iPad') and p < 500)
+        .. note:: The :py:meth:`~Query.where` method was added in version 0.7.3. Before that it was possible to do the same by using ``filter()`` method in which argument of lambda function was not specified:
 
-        Another way to filter the query result is to pass parameters in the form of named arguments:
+            .. code-block:: python
 
-        .. code-block:: python
+                q = select(o.customer for o in Order)
 
-            q = select(o.customer for o in Order if o.total_price > 1000)
-            q2 = q.filter(name="John Smith", country="UK")
+                # using new where() method
+                q2a = q.where(lambda o: o.customer.name == 'John Smith')
 
-        Keyword arguments can be used only when the result of the query is an object. In the example above it is an object of the ``Customer`` type.
+                # old way to do the same using filter() method
+                q2b = q.filter(lambda: o.customer.name == 'John Smith')
 
-        Also the ``filter()`` method can receive a text definition of a lambda function. It can be used when you combine the condition from text pieces:
+            But this old way has a drawback: IDEs and linters don't understand code and warn about "undefined global variable ``o``". With ``where()`` it is no longer the case. Using lambda function without argument in ``filter()`` will be deprecated in the next release.
 
-        .. code-block:: python
 
-            q = select(p for p in Product)
-            x = 100
-            q2 = q.filter("lambda p: p.price > x")
+        **Specifying** ``filter()`` **condition using lambda function**
 
-        In the example above the ``x`` variable in lambda refers to ``x`` defined before. The more secure solution is to specify the dictionary with values as a second argument of the ``filter()`` method:
+            Usually the argument of the ``filter()`` method is a lambda function. The argument of the lambda function represents the result of the query. You can use an arbitrary name for this argument:
 
-        .. code-block:: python
+            .. code-block:: python
 
-            q = select(p for p in Product)
-            q2 = q.filter("lambda p: p.price > x", {"x": 100})
+                q = select(p.name for p in Product)
+                q2 = q.filter(lambda x: x.startswith('Apple iPad'))
+
+            In the example above ``x`` argument corresponds to the result of the query ``p.name``. This way you cannot access the ``p`` variable in the filter method, only ``p.name``. When you need to access the original query loop variable, you can use the :py:meth:`~Query.where` method instead.
+
+            If the query returns a tuple, the number of ``filter()`` lambda function arguments should correspond to the query result:
+
+            .. code-block:: python
+
+                q = select((p.name, p.price) for p in Product)
+                q2 = q.filter(lambda n, p: n.startswith('Apple iPad') and p < 500)
+
+        **Specifying** ``filter()`` **condition using keyword arguments**
+
+            Another way to filter the query result is to pass parameters in the form of named arguments:
+
+            .. code-block:: python
+
+                q = select(o.customer for o in Order if o.total_price > 1000)
+                q2 = q.filter(name="John Smith", country="UK")
+
+            Keyword arguments can be used only when the result of the query is an object. In the example above it is an object of the ``Customer`` type.
+
+        **Specifying** ``filter()`` **condition as a text string**
+
+            Also the ``filter()`` method can receive a text definition of a lambda function. It can be used when you combine the condition from text pieces:
+
+            .. code-block:: python
+
+                q = select(p for p in Product)
+                x = 100
+                q2 = q.filter("lambda p: p.price > x")
+
+            In the example above the ``x`` variable in lambda refers to ``x`` defined before. The more secure solution is to specify the dictionary with values as a second argument of the ``filter()`` method:
+
+            .. code-block:: python
+
+                q = select(p for p in Product)
+                q2 = q.filter("lambda p: p.price > x", {"x": 100})
 
     .. py:method:: first()
 
@@ -2186,115 +2222,136 @@ The generator expression and lambda queries return an instance of the ``Query`` 
 
     .. py:method:: order_by(attr1 [, attr2, ...])
                    order_by(pos1 [, pos2, ...])
-                   order_by(lambda[, globals[, locals])
-                   order_by(str)
+                   order_by(lambda[, globals[, locals]])
+                   order_by(str[, globals[, locals]])
 
-        .. note:: The behavior of ``order_by`` is going to be slightly changed in the next release (0.8). In order to use the previous behaviour you can use ``sort_by`` method which currently works as an alias to ``order_by``. Just rename all ``order_by`` method calls to :py:func:`sort_by` in your project to be sure that future change will not affect your application.
+        .. note:: The behavior of ``order_by()`` is going to be changed in the next release (0.8). Previous behavior supports by method :py:func:`sort_by` which is introduced in the release 0.7.3. In order to be fully forward-compatible with the release 0.8, you can replace all ``order_by()`` calls to ``sort_by()`` calls.
 
-        Order the results of a query. Currently ``order_by`` and ``sort_by`` methods work in the same way - they are applied to the result of the previous query. Starting with the release 0.8 the behavior of the ``order_by`` method will be changed. The ``order_by`` method will reference the loop variable, not the result of the query.
-
-        .. code-block:: python
-
-            query = select(o.customer for o in Order)
-            query1 = query.order_by(lambda o: o.total_price)  # starting from the release 0.8
-            query2 = query.sort_by(lambda c: c.name)  # current behavior of order_by and sort_by function
-
-        There are several options available:
-
-        * Using entity attributes
+        Orders the results of a query. Currently ``order_by()`` and ``sort_by()`` methods work in the same way - they are applied to the result of the previous query.
 
         .. code-block:: python
 
-            select(o for o in Order).order_by(Order.customer, Order.date_created)
+            q = select(o.customer for o in Order)
 
-        For ordering in descending order, use the function :py:func:`desc()`:
+            # The following five queries are all equivalent
 
-        .. code-block:: python
+            # Before the 0.8 release
+            q1 = q.order_by(lambda c: c.name)
+            q2 = q.order_by(Customer.name)
 
-            select(o for o in Order).order_by(desc(Order.date_created))
+            # Starting from the 0.7.3 release
+            q3 = q.sort_by(lambda c: c.name)
+            q4 = q.sort_by(Customer.name)
 
-        * Using position of query result variables
+            # After the 0.8 release
+            q5 = q.order_by(lambda o: o.customer.name)
 
-        .. code-block:: python
-
-            select((o.customer.name, o.total_price) for o in Order).order_by(-2, 1)
-
-        The position numbers start with 1. Minus means sorting in the descending order. In this example we sort the result by the total price in descending order and by the customer name in ascending order.
-
-        * Using lambda
-
-        .. code-block:: python
-
-            select(o for o in Order).order_by(lambda o: (o.customer.name, desc(o.date_shipped)))
-
-        If the lambda has a parameter (``o`` in our example) then ``o`` represents the result of the ``select`` and will be applied to it. Starting from the release 0.8 it will represent the iterator loop variable from the original query. If you want to continue using the result of a query for ordering, you need to use the ``sort_by`` method instead.
-
-        If you specify the lambda without a parameter, then inside lambda you have access to all names defined inside the query:
+        Most often query returns the same object it iterates. In this case the behavior of ``order_by()`` will remains the same before and after the 0.8 release:
 
         .. code-block:: python
 
-            select(o.total_price for o in Order).order_by(lambda: o.customer.id)
+            # the query returns the loop variable
+            q = select(c for c in Customer if c.age > 18)
 
-        * Using a string
+            # the next line will work the same way
+            # before and after the 0.8 release
+            q2 = q.order_by(lambda c: c.name)
 
-        This approach is similar to the previous one, but you specify the body of a lambda as a string:
+        There are several ways how it is possible to call ``order_by()`` method:
 
-        .. code-block:: python
+        **Using entity attributes**
 
-            select(o for o in Order).order_by("o.customer.name, desc(o.date_shipped)")
+            .. code-block:: python
+
+                select(o for o in Order).order_by(Order.date_created)
+
+            For ordering in descending order, use the function :py:func:`desc()`:
+
+            .. code-block:: python
+
+                select(o for o in Order).order_by(desc(Order.date_created))
+
+        **Using position of query result variables**
+
+            .. code-block:: python
+
+                select((o.customer.name, o.total_price) for o in Order).order_by(-2, 1)
+
+            The position numbers start with 1. Minus means sorting in the descending order. In this example we sort the result by the total price in descending order and by the customer name in ascending order.
+
+        **Using lambda**
+
+            .. code-block:: python
+
+                select(o for o in Order).order_by(lambda o: o.customer.name)
+
+            If the lambda has a parameter (``o`` in our example) then ``o`` represents the result of the ``select`` and will be applied to it. Starting from the release 0.8 it will represent the iterator loop variable from the original query. If you want to continue using the result of a query for ordering, you need to use the ``sort_by`` method instead.
+
+        **Using lambda without parameters**
+
+            If you specify the lambda without parameters, then inside lambda you may access all names defined inside the query:
+
+            .. code-block:: python
+
+                select(o.total_price for o in Order).order_by(lambda: o.customer.id)
+
+            It looks like ``o`` is a global variable, but Pony understand it as a loop variable name ``o`` from the generator expression. This behavior confuses IDEs and linetrs which warn about "access to undefined global variable ``o``". Starting with release 0.8 this way of using ``order_by()`` will be unnecessary: just add ``o`` argument to lambda function instead.
+
+        **Specifying a string expression**
+
+            This approach is similar to the previous one, but you specify the body of a lambda as a string:
+
+            .. code-block:: python
+
+                select(o for o in Order).order_by("o.customer.name")
 
 
     .. py:method:: sort_by(attr1 [, attr2, ...])
                    sort_by(pos1 [, pos2, ...])
-                   sort_by(lambda[, globals[, locals])
-                   sort_by(str)
+                   sort_by(lambda[, globals[, locals]])
+                   sort_by(str[, globals [, locals]])
 
-        Order the results of a query. Currently ``order_by`` and ``sort_by`` methods work in the same way - they are applied to the result of the previous query. Starting with the release 0.8 the behavior of the ``order_by`` method will be changed. The ``order_by`` method will reference the loop variable, not the result of the query.
+        *New in 0.7.3*
 
-        .. code-block:: python
+        Orders the results of a query. The expression in ``sort_by()`` method call applies to items in query result. Until the 0.8 release it works the same as :py:meth:`~Query.order_by`, then the behavior of ``order_by()`` will change.
 
-            query = select(o.customer for o in Order)
-            query1 = query.order_by(lambda o: o.total_price)  # starting from the release 0.8
-            query2 = query.sort_by(lambda c: c.name)  # current behavior of order_by and sort_by function
+        There are several ways how it is possible to call ``order_by()`` method:
 
-        There are several options available:
+        **Using entity attributes**
 
-        * Using entity attributes
+            .. code-block:: python
 
-        .. code-block:: python
+                select(o.customer for o in Order).sort_by(Customer.name)
 
-            select(o.customer for o in Order).sort_by(Customer.name)
+            For ordering in descending order, use the function :py:func:`desc()`:
 
-        For ordering in descending order, use the function :py:func:`desc()`:
+            .. code-block:: python
 
-        .. code-block:: python
+                select(o.customer for o in Order).sort_by(desc(Customer.name))
 
-            select(o.customer for o in Order).sort_by(desc(Customer.name))
+        **Using position of query result variables**
 
-        * Using position of query result variables
+            .. code-block:: python
 
-        .. code-block:: python
+                select((o.customer.name, o.total_price) for o in Order).sort_by(-2, 1)
 
-            select((o.customer.name, o.total_price) for o in Order).sort_by(-2, 1)
+            The position numbers start with 1. Minus means sorting in the descending order. In this example we sort the result by the total price in descending order and by the customer name in ascending order.
 
-        The position numbers start with 1. Minus means sorting in the descending order. In this example we sort the result by the total price in descending order and by the customer name in ascending order.
+        **Using lambda**
 
-        * Using lambda
+            .. code-block:: python
 
+                select(o.customer for o in Order).sort_by(lambda c: c.name)
 
-        .. code-block:: python
+            Lambda inside the ``sort_by`` method receives the result of the previous query.
 
-            select(o.customer for o in Order).sort_by(lambda c: (c.name, desc(c.country)))
+        **Specifying a string expression**
 
-        Lambda inside the ``sort_by`` method receives the result of the previous query.
+            This approach is similar to the previous one, but you specify the body of a lambda as a string:
 
-        * Using a string
+            .. code-block:: python
 
-        This approach is similar to the previous one, but you specify the body of a lambda as a string:
-
-        .. code-block:: python
-
-            select(o for o in Order).sort_by("o.customer.name, desc(o.date_shipped)")
+                select(o for o in Order).sort_by("o.customer.name")
 
 
     .. py:method:: page(pagenum, pagesize=10)
@@ -2428,59 +2485,87 @@ The generator expression and lambda queries return an instance of the ``Query`` 
 
         *New in version 0.7.3*
 
-        Filter the result of a query. The conditions which are passed as parameters to the ``where()`` method will be translated into the WHERE section of the resulting SQL query. The result of the ``where()`` method is a new query object with the specified additional condition.
+        Filters the result of a query. The conditions which are passed as parameters to the ``where()`` method will be translated into the WHERE section of the resulting SQL query. The result of the ``where()`` method is a new query object with the specified additional condition.
 
-        This method is similar to the :py:meth:`~Query.filter` method.
+        .. note:: This method is similar to the :py:meth:`~Query.filter` method. The difference is that the ``filter()`` condition applies to items returned from the previous query, whereas ``where()`` condition applies to the loop variables from the original generator expression. Example:
 
-        Typically you specify the lambda function as the argument of the ``where()`` method. The arguments of the lambda function refer to the query loop variables, and should have the same names.
+            .. code-block:: python
 
-        .. code-block:: python
+                q = select(o.customer for o in Order)
 
-            q = select(p.name for p in Product).where(lambda p: p.price > 1000)
+                # c refers to o.customer
+                q2 = q.filter(lambda c: c.name.startswith('John'))
 
-        In the example above ``p`` argument corresponds to the ``p`` variable of the query.
+                # o refers to Order object
+                q3 = q2.where(lambda o: o.total_price > 1000)
 
-        In the ``where()`` method the lambda arguments can refer to all loop variables from the original query:
+            The name of lambda function argument in ``filter()`` may be arbitrary, but in ``where()`` the name of lambda argument should exactly match the name of the loop variable.
 
-        .. code-block:: python
+        .. note:: Before the ``where()`` method was added it was possible to do the same by using :py:meth:`~Query.filter` method in which argument of lambda function was not specified:
 
-            q = select(c.name for c in Customer for o in c.orders if o.total_price > 1000)
-            q2 = q.where(lambda c, o: c.country == 'US' and o.state == 'DELIVERED')
+            .. code-block:: python
 
-        When the query is written using the ``select()`` method of an entity, the argument of lambda function should be the first letter of the entity name in the lower case:
+                q = select(o.customer for o in Order)
 
-        .. code-block:: python
+                # using new where() method
+                q2a = q.where(lambda o: o.customer.name == 'John Smith')
 
-            q = Product.select(lambda p: p.price > 1000)
-            q2 = q.where(lambda p: p.name.startswith('A'))
+                # old way to do the same using filter() method
+                q2b = q.filter(lambda: o.customer.name == 'John Smith')
 
-        Another way to filter the query result is to pass parameters in the form of named arguments:
+            But this old way has a drawback: IDEs and linters don't understand code and warn about "undefined global variable ``o``". With ``where()`` it is no longer the case. Using lambda function without argument in ``filter()`` will be deprecated in the next release.
 
-        .. code-block:: python
+        **Specifying** ``where()`` **condition using lambda function**
 
-            q = select(o.customer for o in Order if o.total_price > 1000)
-            q2 = q.where(state == 'DELIVERED')
+            Usually the argument of the ``where()`` method is a lambda function. The arguments of the lambda function refer to the query loop variables, and should have the same names.
 
-        The ``state`` keyword attribute refers to the ``state`` attribute of the ``Order`` object.
+            .. code-block:: python
 
-        Keyword arguments can be used only when the result of the query is an object. In the example above it is an object of the ``Customer`` type.
+                q = select(p.name for p in Product).where(lambda p: p.price > 1000)
 
-        Also the ``where()`` method can receive an expression text instead of lambda function. It can be used when you combine the condition from text pieces:
+            In the example above ``p`` argument corresponds to the ``p`` variable of the query.
 
-        .. code-block:: python
+            In the ``where()`` method the lambda arguments can refer to all loop variables from the original query:
 
-            q = select(p for p in Product)
-            x = 100
-            q2 = q.where("p.price > x")
+            .. code-block:: python
 
-        The more secure solution is to specify the dictionary with values as a second argument of the ``where()`` method:
+                q = select(c.name for c in Customer for o in c.orders)
+                q2 = q.where(lambda c, o: c.country == 'US' and o.state == 'DELIVERED')
 
-        .. code-block:: python
+            When the query is written using the ``select()`` method of an entity, the query does not have any explicitly defined loop variable. In that case the argument of lambda function should be the first letter of the entity name in the lower case:
 
-            q = select(p for p in Product)
-            q2 = q.where("p.price > x", {"x": 100})
+            .. code-block:: python
 
+                q = Product.select()
+                q2 = q.where(lambda p: p.name.startswith('A'))
 
+        **Specifying** ``where()`` **condition using keyword arguments**
+
+            Another way to filter the query result is to pass parameters in the form of named arguments:
+
+            .. code-block:: python
+
+                q = select(o.customer for o in Order if o.total_price > 1000)
+                q2 = q.where(state == 'DELIVERED')
+
+            The ``state`` keyword attribute refers to the ``state`` attribute of the ``Order`` object.
+
+        **Specifying** ``where()`` **condition as a text string**
+
+            Also the ``where()`` method can receive an expression text instead of lambda function. It can be used when you combine the condition from text pieces:
+
+            .. code-block:: python
+
+                q = select(p for p in Product)
+                x = 100
+                q2 = q.where("p.price > x")
+
+            The more secure solution is to specify the dictionary with values as a second argument of the ``where()`` method:
+
+            .. code-block:: python
+
+                q = select(p for p in Product)
+                q2 = q.where("p.price > x", {"x": 100})
 
 
     .. py:method:: without_distinct()
