@@ -484,7 +484,7 @@ See the :ref:`Entity methods <entity_methods>` part of the API Reference for det
 Entity hooks
 ------------
 
-See the :ref:`Entity hooks <entity_methods>` part of the API Reference for details.
+See the :ref:`Entity hooks <entity_hooks>` part of the API Reference for details.
 
 
 
