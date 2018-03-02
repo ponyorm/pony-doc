@@ -10,7 +10,7 @@ Pony provides automatic transaction management using the database session.
 Working with db_session
 -----------------------
 
-The code which interacts with the database has to work within a database session. The session sets the borders of a conversation with the database. Each application thread which works with the database establishes a separate database session and uses a separate instance of an Identity Map. This Identity Map works as a cache, helping to avoid a database query when you access an object by its primary or unique key and it is already stored in the Identity Map.
+The code which interacts with the database has to be placed within a database session. The session sets the borders of a conversation with the database. Each application thread which works with the database establishes a separate database session and uses a separate instance of an Identity Map. This Identity Map works as a cache, helping to avoid a database query when you access an object by its primary or unique key and it is already stored in the Identity Map.
 In order to work with the database using the database session you can use the ``@db_session`` decorator or ``db_session`` context manager. When the session ends it does the following actions:
 
 * Commits transaction if data was changed and no exceptions occurred otherwise it rolls back transaction.
@@ -124,36 +124,6 @@ Parameters of db_session
 
 As it was mentioned above ``db_session`` can be used as a decorator or a context manager. ``db_session`` can receive parameters which are described below.
 
-.. py:attribute:: retry
-
-   Accepts an integer value and specifies the number of attempts for committing the current transaction. This parameter can be used with the ``db_session`` decorator only. The decorated function cannot call ``commit()`` or ``rollback()`` functions explicitly. When this parameter is specified, Pony catches the ``TransactionError`` exception (and all its descendants) and restarts the current transaction. By default Pony catches the ``TransactionError`` exception only, but this list can be modified using the ``retry_eceptions`` parameter.
-
-.. py:attribute:: retry_exceptions
-
-   Accepts list and allows you to specify the list of exceptions which will cause the transaction restart. By default this parameter is equal to ``[TransactionError]``.
-   Another option is to specify a callable which returns a boolean value. This callable receives the only parameter - the occurred exception. If this callable returns ``True`` then the transaction will be restarted.
-
-.. py:attribute:: allowed_exceptions
-
-   This parameter receives a list of exceptions which when occurred do not cause the transaction rollback. For example, some web frameworks trigger HTTP redirect with the help of an exception.
-
-.. py:attribute:: immediate
-
-   Accepts a boolean value, ``False`` by default.  Some databases (e.g. SQLite, Postgres) start a transaction only when a modifying query is sent to the database(UPDATE, INSERT, DELETE) and don’t start it for SELECTs. If you need to start a transaction on SELECT, then you should pass ``True`` for this parameter. Usually there is no need to change this parameter.
-
-.. py:attribute:: serializable
-
-   Accepts a boolean value, ``False`` by default. Allows you to set the SERIALIZABLE isolation level for a transaction.
-
-.. py:attribute:: strict
-
-   *Experimental*
-
-   When ``True`` the cache will be cleared on exiting the ``db_session``.
-
-   Normally Pony strongly advises that you work with entity objects only within the ``db_session``. But some Pony users want to access extracted objects in read-only mode even after the ``db_session`` is over. In order to provide this feature, by default, Pony doesn't purge cache on exiting from the ``db_session``. This might be handy, but in the same time, this can require more memory for keeping all objects extracted from the database in cache.
-
-   Setting ``strict=True`` clears the objects cache on exiting the ``db_session``. If you'll try to access an object after the session is over, you'll get the ``pony.orm.core.DatabaseSessionIsOver`` exception.
 
 
 
@@ -185,30 +155,6 @@ On exiting from the ``do_something()`` function Pony will perform ``commit()`` o
 
 Functions for working with transactions
 ---------------------------------------
-
-.. _commit_ref:
-
-.. py:function:: commit()
-
-   Saves all changes which were made within the current ``db_session`` using the :ref:`flush() <flush_ref>` method and commits the transaction to the database. This top level ``commit()`` function calls the :py:meth:`commit()<Database.commit>` method of each database object which was used in current transaction.
-
-.. py:function:: rollback()
-
-   Rolls back the current transaction. This top level ``rollback()`` function calls the :py:meth:`rollback()<Database.rollback>` method of each database object which was used in current transaction.
-
-
-.. _flush_ref:
-
-.. py:function:: flush()
-
-   Saves all changes from ``db_session`` cache to the databases, without committing them. Usually Pony saves data from the database session cache automatically and you don't need to call this function yourself. One of the use cases when it might be needed is when you want to get the primary keys values of newly created objects which has autoincremented primary key before commit.
-
-   Pony always saves the changes accumulated in the ``db_session`` cache automatically before executing the following methods: ``select()``, ``get()``, ``exists()``, ``execute()`` and ``commit()``.
-
-   The ``flush()`` function makes the updates made in ``db_session`` cache visible to all database queries which belong to current transaction. At the same time, after calling the ``flush()`` functions, the results are not committed to the database yet.
-
-   This top level ``flush()`` function calls the :py:meth:`flush()<Database.flush>` method of each database object which was used in current transaction.
-
 
 
 Optimistic concurrency control

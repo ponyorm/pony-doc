@@ -35,7 +35,7 @@ Entity attributes are specified as class attributes inside the entity class usin
 
 You can also specify additional attribute options after the attribute type in the parentheses. We will discuss this in more detail later in this chapter.
 
-Pony has the following kinds of attributes:
+Each attribute can be one of the following kinds:
 
 * Required
 * Optional
@@ -45,18 +45,11 @@ Pony has the following kinds of attributes:
 Required and Optional
 ~~~~~~~~~~~~~~~~~~~~~
 
-Usually most entity attributes are of ``Required`` or ``Optional`` kind. If an attribute is defined as ``Required`` then it must have a value at all times, while ``Optional`` attributes may be empty.
+Usually most entity attributes are of ``Required`` or ``Optional`` kind. If an attribute is defined as ``Required`` then it must have a value at all times, while ``Optional`` attributes can be empty.
 
 If you need the value of an attribute to be unique then you can set the attribute option ``unique=True``.
 
-Optional string attributes
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-For most data types ``None`` is used when no value is assigned to the attribute. But when a string attribute is not assigned a value, Pony uses an empty string instead of ``None``. This is more practical than storing empty string as ``NULL`` in the database. Most frameworks behave this way. Also, empty strings can be indexed for faster search, unlike NULLs. If you will try to assign ``None`` to such an optional string attribute, you’ll get the ``ConstraintError`` exception. You can change this behavior using the ``nullable=True`` option. In this case it will be possible to store both empty strings and ``NULL`` values in the same column, but this is rarely needed.
-
-Oracle database treats empty strings as ``NULL`` values. Because of this all ``Optional`` attributes in Oracle have ``nullable`` set to ``True`` automatically.
-
-If an optional string attribute is used as a unique key or as a part of a unique composite key, it will always have ``nullable`` set to ``True`` automatically.
 
 PrimaryKey
 ~~~~~~~~~~~~~~~~~~~~~
@@ -147,58 +140,8 @@ Attribute data types
 
 Entity attributes are specified as class attributes inside the entity class using the syntax ``attr_name = kind(type)``. You can use the following data types when define attributes:
 
-* str
-* unicode
-* int
-* float
-* Decimal
-* datetime
-* date
-* time
-* timedelta
-* bool
-* buffer - used for binary data in Python 2 and 3
-* bytes - used for binary data in Python 3
-* LongStr - used for large strings
-* LongUnicode - used for large strings
-* UUID
-* Json
-
-``buffer`` and ``bytes`` types are stored as binary (BLOB) types in the database. ``LongStr`` and ``LongUnicode``  are stored as CLOB in the database.
-
-Starting with the Pony Release 0.6, where the support for Python 3 was added, instead of ``unicode`` and ``LongUnicode`` we recommend to use ``str`` and ``LongStr`` types respectively.
-
-As you know, Python 3 has some differences from Python 2 when it comes to strings. Python 2 provides two string types – ``str`` (byte string) and ``unicode`` (unicode string), whereas in Python 3 the ``str`` type represents unicode strings and the ``unicode`` was just removed.
-
-Before the release 0.6, Pony stored ``str`` and ``unicode`` attributes as unicode in the database, but for ``str`` attributes it had to convert unicode to byte string on reading from the database. Starting with the Pony Release 0.6 the attributes of ``str`` type in Python 2 behave as if they were declared as ``unicode`` attributes. There is no difference now if you specify ``str`` or ``unicode`` as the attribute type – you will have unicode string in Python and in the database.
-The same thing is with the ``LongUnicode`` and ``LongStr``. ``LongStr`` now is an alias to ``LongUnicode``. This type uses unicode in Python and in the database.
-
-.. code-block:: python
-
-    attr1 = Required(str)
-    # is the same as
-    attr2 = Required(unicode)
-
-    attr3 = Required(LongStr)
-    # is the same as
-    attr4 = Required(LongUnicode)
-
-If you need to represent byte sequence in Python 2, you can use the ``buffer`` type. In Python 3 you should use the ``bytes`` type for this purpose.
-
-If you need to represent a byte sequence in Python 2, you can use the ``buffer`` type. In Python 3 the ``buffer`` type has gone, and Pony uses the ``bytes`` type which was added in Python 3 to represent binary data. But for the sake of backward compatibility we still keep ``buffer`` as an alias to the ``bytes`` type in Python 3. If you're importing ``*`` from ``pony.orm`` you will get this alias too.
-
-If you want to write code which can run both on Python 2 and Python 3, you should use the ``buffer`` type for binary attributes. If your code is for Python 3 only, you can use ``bytes`` instead:
-
-.. code-block:: python
-
-    attr1 = Required(buffer) # Python 2 and 3
-
-    attr2 = Required(bytes) # Python 3 only
 
 
-It would be cool if we could use the ``bytes`` type as an alias to ``buffer`` in Python 2, but unfortunately it is impossible, because `Python 2.6 adds bytes as a synonym for the str type <https://docs.python.org/2/whatsnew/2.6.html#pep-3112-byte-literals>`_.
-
-Also you can specify another entity as the attribute type for defining a relationship between two entities.
 
 
 Attribute options
@@ -207,182 +150,22 @@ Attribute options
 You can specify additional options during attribute definitions using positional and keyword arguments. Positional arguments depend on the attribute type.
 
 
-Max string length
-~~~~~~~~~~~~~~~~~~~~~
 
-String types accept a positional argument which specifies the max length of this column in the database::
-
-    name = Required(str, 40)   #  VARCHAR(40)
-
-
-Max integer number size
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-For the ``int`` type you can specify the size of integer type that should be used in the database using the ``size`` keyword. This parameter receives the number of bits that should be used for representing an integer in the database. Allowed values are 8, 16, 24, 32 and 64::
-
-    attr1 = Required(int, size=8)   # 8 bit - TINYINT in MySQL
-    attr2 = Required(int, size=16)  # 16 bit - SMALLINT in MySQL
-    attr3 = Required(int, size=24)  # 24 bit - MEDIUMINT in MySQL
-    attr4 = Required(int, size=32)  # 32 bit - INTEGER in MySQL
-    attr5 = Required(int, size=64)  # 64 bit - BIGINT in MySQL
-
-You can use the ``unsigned`` parameter to specify that the attribute is unsigned::
-
-    attr1 = Required(int, size=8, unsigned=True) # TINYINT UNSIGNED in MySQL
-
-The default value of the ``unsigned`` parameter is ``False``. If ``unsigned`` is set to ``True``, but ``size`` is not provided, ``size`` assumed to be 32 bits.
-
-If current database does not support specified attribute size, the next bigger size is used. For example, PostgreSQL does not have ``MEDIUMINT`` numeric type, so ``INTEGER`` type will be used for an attribute with size 24.
-
-Only MySQL actually supports unsigned types. For other databases the column will use signed numeric type which can hold all valid values for the specified unsigned type. For example, in PostgreSQL an unsigned attribute with size 16 will use ``INTEGER`` type. An unsigned attribute with size 64 can be represented only in MySQL and Oracle.
-
-When the size is specified, Pony automatically assigns ``min`` and ``max`` values for this attribute. For example, a signed attribute with size 8 will receive ``min`` value -128 and ``max`` value 127, while unsigned attribute with the same size will receive ``min`` value 0 and ``max`` value 255. You can override ``min`` and ``max`` with your own values if necessary, but these values should not exceed the range implied by the size.
-
-.. note:: Starting with the Pony release 0.6 the ``long`` type is deprecated and if you want to store 64 bit integers in the database, you need to use ``int`` instead with ``size=64``. If you don't specify the ``size`` parameter, Pony will use the default integer type for the specific database.
 
 Decimal scale and precision
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-For the ``Decimal`` type you can specify precision and scale::
-
-    price = Required(Decimal, 10, 2)   #  DECIMAL(10, 2)
 
 
 Datetime and time precision
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-The ``datetime`` and ``time`` types accept a positional argument which specifies the column's precision. By default it is equal to 6 for most databases.
-
-For MySQL database the default value is 0. Before the MySQL version 5.6.4, the ``DATETIME`` and ``TIME`` columns were `unable to store fractional seconds <http://dev.mysql.com/doc/refman/5.6/en/fractional-seconds.html>`_ at all. Starting with the version 5.6.4, you can store fractional seconds if you set the precision equal to 6 during the attribute definition::
-
-    dt = Required(datetime, 6)
 
 
 Other attribute options
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Additional attribute options which can be set as keyword arguments:
-
-.. py:attribute:: unique
-
-   Boolean value to determine if the value of the attribute should be unique.
-
-.. py:attribute:: auto
-   
-   Boolean value, can be used for a PrimaryKey attribute only. If ``auto=True`` then the value for this attribute will be assigned automatically using the database’s incremental counter or sequence.
-
-.. py:attribute:: default 
-
-   Allows you to specify a default value for the attribute.
-
-   .. note:: Pony processes default values in Python, it doesn't add SQL DEFAULT clause to the column definition. This is because the default expression can be not only a constant, but any arbitrary Python function. For example:
-
-      .. code-block:: python
-
-             import uuid
-             from pony.orm import *
-
-             db = Database()
-
-             class MyEntity(db.Entity):
-                 code = Required(uuid.UUID, default=uuid.uuid4)
-
-      If you need to set a default value in the database, you should use the :py:attr:`sql_default` option.
 
 
-.. py:attribute:: sql_default
-
-   This option allows you to specify default SQL text which will be included to the CREATE TABLE SQL command. For example::
-
-       created_at = Required(datetime, sql_default='CURRENT_TIMESTAMP')
-       closed = Required(bool, default=True, sql_default='1')
-
-   Specifying ``sql_default=True`` can be convenient when you have a ``Required`` attribute and the value for it is going to be calculated in the database during the INSERT command (e.g. by a trigger). ``None`` by default.
-
-.. py:attribute:: index 
-
-   Allows you to control index creation for this column. ``index=True`` - the index will be created with the default name. ``index='index_name'`` - create index with the specified name. ``index=False`` – skip index creation. If no 'index' option is specified then Pony still creates index for foreign keys using the default name. 
-
-.. py:attribute:: sql_type 
-
-   Use this option if you want to set a specific SQL type for the column. 
-
-.. py:attribute:: lazy
-
-   Boolean value, defers loading of the attribute while loading the object. ``True`` means this attribute will not be loaded until you try to access this attribute directly. By default ``lazy`` is set to ``True`` for ``LongStr`` and ``LongUnicode`` and to ``False`` for all other types.
-
-.. _attribute_cascade_delete_ref:
-
-.. py:attribute:: cascade_delete
-
-   Boolean value which controls the cascade deletion of related objects. ``True`` means that Pony always does cascade delete even if the other side is defined as ``Optional``. ``False`` means that Pony never does cascade delete for this relationship. If the relationship is defined as ``Required`` at the other end and ``cascade_delete=False`` then Pony raises the ``ConstraintError`` exception on deletion attempt.
-
-.. py:attribute:: column
-
-   Specifies the name of the column in the database table which is used for mapping.
-
-.. py:attribute:: columns
-
-   Specifies a list of column names in the database table which are used for mapping a composite attribute.
-
-.. py:attribute:: reverse
-
-   Specifies the attribute at the other end which should be used for the relationship.
-
-.. py:attribute:: reverse_column
-
-   Used for a symmetric relationship in order to specify the name of the database column for the intermediate table.
-
-.. py:attribute:: reverse_columns
-
-   Used for a symmetric relationship if the entity has a composite primary key. Allows you to specify the name of the database columns for the intermediate table. 
-
-.. py:attribute:: table
-
-   Can be used for many-to-many relationship only in order to specify the name of the intermediate table.
-
-.. py:attribute:: nullable 
-
-   Boolean value. ``True`` allows the column to be ``NULL`` in the database. Most likely you don't need to specify this option because Pony sets it to the most appropriate value by default.
-
-.. py:attribute:: volatile
-
-   Usually you specify the value of the attribute in Python and Pony stores this value in the database. But sometimes you might want to have some logic in the database which changes the value for a column. For example, you can have a trigger in the database which updates the timestamp of the last object's modification. In this case you want to have Pony to forget the value of the attribute on object's update sent to the database and read it from the database at the next access attempt. Set ``volatile=True`` in order to let Pony know that this attribute can be changed in the database.
-
-   The ``volatile=True`` option can be combined with the ``sql_default=True`` option if the value for this attribute is going to be both created and updated by the database.
-
-   You can get the exception ``UnrepeatableReadError: Value ... was updated outside of current transaction`` if another transaction changes the value of the attribute which is used in the current transaction. Pony notifies about it because this situation can break the business logic of the application. If you don't want Pony to protect you from such concurrent modifications you can set ``volatile=True`` for an attribute.
-
-.. py:attribute:: sequence_name
-
-   Allows you to specify the sequence name used for ``PrimaryKey`` attributes for Oracle database.
-
-.. py:attribute:: py_check
-
-   This parameter allows you to specify a function which will be used for checking the value before it is assigned to the attribute. The function should return ``True`` or ``False``. Also it can raise the ``ValueError`` exception if the check failed. Example::
-
-       class Student(db.Entity):
-           name = Required(str)
-           gpa = Required(float, py_check=lambda val: val >= 0 and val <= 5)
-
-.. py:attribute:: min
-   :noindex:
-
-   Allows you to specify the minimum allowed value for numeric attributes (int, float, Decimal). If you will try to assign the value that is less than the specified min value, you'll get the ``ValueError`` exception.
-
-.. py:attribute:: max
-   :noindex:
-
-   Allows you to specify the maximum allowed value for numeric attributes (int, float, Decimal). If you will try to assign the value that is greater than the specified max value, you'll get the ``ValueError`` exception.
-
-
-.. py:attribute:: hidden
-
-   When set to ``True``, hides the attribute from being serialized by the :py:meth:`Database.to_json` method. Also it prevents changing the the attribute by the :py:meth:`Database.from_json` method.
-
-.. py:attribute:: autostrip
-
-   Automatically remove leading and trailing whitespace characters in a string attribute. Similar to Python ``string.strip()`` function. By default is ``True``.
 
 
 Entity inheritance

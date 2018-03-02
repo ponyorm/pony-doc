@@ -503,49 +503,6 @@ Entity instance methods
 Entity hooks
 -----------------------------------
 
-Sometimes you might need to perform an action before or after your entity instance is going to be created, updated or deleted in the database. For this purpose you can use entity hooks. You can write your own implementation for the following methods during the entity definition:
-
-.. class:: Entity
-
-   .. py:method:: before_insert
-
-      Is called only for newly created objects before it is inserted into the database.
-
-   .. py:method:: before_update
-
-      Is called for entity instances before updating the instance in the database.
-
-   .. py:method:: before_delete
-
-      Is called before deletion the entity instance in the database.
-
-   .. py:method:: after_insert
-
-      Is called after the row is inserted into the database.
-
-   .. py:method:: after_update
-
-      Is called after the instance updated in the database.
-
-   .. py:method:: after_delete
-
-      Is called after the entity instance is deleted in the database.
-
-.. code-block:: python
-
-   >>> class Message(db.Entity):
-   ...     title = Required(str)
-   ...     content = Required(str)
-   ...     def before_insert(self):
-   ...         print "Before insert!"
-
-   >>> m = Message(title='First message', content='Hello, world!')
-   >>> commit()
-   Before insert!
-   INSERT INTO "Message" ("title", "content") VALUES (?, ?)
-   [u'First message', u'Hello, world!']
-
-
 
 Serializing entity instances
 -------------------------------------------
