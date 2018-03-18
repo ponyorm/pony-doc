@@ -61,11 +61,11 @@ Usually, a JSON structure contains a combination of dictionaries and lists conta
                      'display': {
                         'size': 4.7,
                         'resolution': [750, 1334],
-                        'multi-touch': True
+                        'multi-touch': True,
                      },
                      'battery': 1810,
                      '3.5mm jack': True,
-                     'colors': ['Silver', 'Gold', 'Space Gray', 'Rose Gold']
+                     'colors': ['Silver', 'Gold', 'Space Gray', 'Rose Gold'],
                  },
                  tags=['Smartphone', 'Apple', 'Retina'])
 
