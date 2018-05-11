@@ -328,7 +328,7 @@ Saving objects in the database
 
 Normally you don't need to bother of saving your entity instances in the database manually - Pony automatically commits all changes to the database on leaving the :py:func:`db_session` context. It is very convenient. In the same time, in some cases you might want to :py:func:`flush` or :py:func:`commit` data in the database before leaving the current database session.
 
-If you need to get the primary key value of a newly created object, you can do :py:func:`commit` manually within the :py:func:`db_session` in order to get this value:
+If you need to get the primary key value of a newly created object, you can do :py:func:`flush` manually within the :py:func:`db_session` in order to get this value:
 
 
 .. code-block:: python
@@ -342,10 +342,12 @@ If you need to get the primary key value of a newly created object, you can do :
         c = Customer(email=email)
         # c.id is equal to None
         # because it is not assigned by the database yet
-        commit()
-        # the new object is persisted in the database
+        c.flush()
+        # c is saved as a table row to the database.
         # c.id has the value now
         print(c.id)
+
+When :py:func:`flush` is called, the object is saved only inside the current session. It means it will be peristed to the database after calling :py:func:`commit` manually (not necessary in most cases) or automatically before leaving the current database session.
 
 
 Order of saving objects
