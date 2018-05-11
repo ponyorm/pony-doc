@@ -347,7 +347,7 @@ If you need to get the primary key value of a newly created object, you can do :
         # c.id has the value now
         print(c.id)
 
-When :py:func:`flush` is called, the object is saved only inside the current session. It means it will be peristed to the database after calling :py:func:`commit` manually (not necessary in most cases) or automatically before leaving the current database session.
+When :py:func:`flush` is called, the object is saved only inside the current session. It means it will be persisted to the database after calling :py:func:`commit` manually (not necessary in most cases) or automatically before leaving the current database session.
 
 
 Order of saving objects
