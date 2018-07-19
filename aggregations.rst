@@ -1,7 +1,7 @@
 ﻿Aggregation
 ===========
 
-You can use the following five aggregate functions for declarative queries:  :py:func:`sum`, :py:func:`count`, :py:func:`min`, :py:func:`max`, and :py:func:`avg`. Let's see some examples of simple queries using these functions.
+You can use the following five aggregate functions for declarative queries:  :py:func:`sum`, :py:func:`count`, :py:func:`min`, :py:func:`max`, :py:func:`avg` and :py:func:`group_concat`. Let's see some examples of simple queries using these functions.
 
 Total GPA of students from group 101:
 
@@ -32,9 +32,15 @@ Average GPA in department 44:
 .. code-block:: python
 
 	avg(s.gpa for s in Student if s.group.dept.number == 44)
+    
+Names of students of group 101 joined by comma:
+
+.. code-block:: python
+
+    group_concat(s.name for s in Student if s.group.number == 101)
 
 
-.. note:: Although Python already has the standard functions ``sum()``, ``count()``, ``min()``, and ``max()``, Pony adds its own functions under the same names. Also, Pony adds its own :py:func:`avg` function. These functions are implemented in the ``pony.orm`` module and they can be imported from there either "by the star", or by its name.
+.. note:: Although Python already has the standard functions ``sum()``, ``count()``, ``min()``, and ``max()``, Pony adds its own functions under the same names. Also, Pony adds its own :py:func:`avg` and :py:func:`group_concat` functions. These functions are implemented in the ``pony.orm`` module and they can be imported from there either "by the star", or by its name.
 
     The functions implemented in Pony expand the behavior of standard functions in Python; thus, if in a program these functions are used in their standard way, the import will not affect their behavior. But it also allows specifying a declarative query inside the function.
 
@@ -63,6 +69,12 @@ This query can be shorter if we use Pony :ref:`attribute lifting <attribute_lift
 .. code-block:: python
 
     select(g for g in Group if avg(g.students.gpa) > 4.5)
+    
+And this query shows all tags for article
+
+.. code-block:: python
+
+    select((article, group_concat(article.tags)) for article in Aricle)
 
 
 Query object aggregate functions
@@ -87,6 +99,7 @@ Here is the list of the aggregate functions:
 * :py:meth:`Query.min`
 * :py:meth:`Query.max`
 * :py:meth:`Query.sum`
+* :py:meth:`Quety.group_concat`
 
 
 Several aggregate functions in one query

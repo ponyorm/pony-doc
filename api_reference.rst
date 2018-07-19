@@ -1645,6 +1645,18 @@ This function is called automatically before executing the following functions: 
         attr_name = 'name'
         param_value = 'John'
         select(c for c in Customer if getattr(c, attr_name) == param_value)
+        
+.. py:function:: group_concat(gen, sep=',', distinct=False)
+
+    Returns string which is concatenation of given attribute.
+    
+    .. code-block:: python
+        
+        group_concat(t.title for t in Tag, sep='-')
+        
+    The equivalent query can be generated using the :py:meth:`~Query.group_concat()` method.
+    
+    .. note:: Query should return only single attribute. Also in SQLite you can't use both `distinct` and `sep` arguments at a time.
 
 
 .. py:function:: JOIN(*args)
@@ -2186,6 +2198,18 @@ The generator expression and lambda queries return an instance of the ``Query`` 
             SELECT "c"."id", "c"."name"
             FROM "category" "c"
             WHERE "c"."name" LIKE 'a%%'
+            
+    .. py:method:: group_concat(sep=',', distinct=False)
+    
+        Returns a string which is the concatenation of all non-NULL values of given column. 
+        
+        The function :py:func:`group_concat` does the same thing.
+        
+        .. code-block:: python
+        
+            select(article.tag for article in Article).group_concat(sep=', #')
+        
+        .. note:: In SQLite you can't use `group_concat()` with both `sep` and `distinct` arguments at a time.
 
 
     .. py:method:: limit(limit, offset=None)
