@@ -388,6 +388,7 @@ Here is the list of functions that can be used inside a generator query:
 * :py:func:`min`
 * :py:func:`count`
 * :py:func:`concat`
+* :py:func:`group_concat`
 * :py:func:`random`
 * :py:func:`raw_sql`
 * :py:func:`select`
