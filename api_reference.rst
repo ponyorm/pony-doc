@@ -1013,6 +1013,10 @@ To-many attributes have methods that provide a convenient way of querying data. 
     .. py:method:: is_empty()
 
         Check if the collection is empty. Returns ``False`` if there is at lease one relationship and ``True`` if this attribute has no relationships.
+        
+        .. code-block:: python
+        
+            select(g for g in Group if not g.students.is_empty())
 
 
     .. py:method:: filter()
