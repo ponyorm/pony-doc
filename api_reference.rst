@@ -974,7 +974,7 @@ To-many attributes have methods that provide a convenient way of querying data. 
         Return a Python ``set`` object which contains the same items as the given collection.
 
 
-    .. py:method:: count()
+    .. py:method:: count(distinct=False)
 
         Return the number of objects in the collection. This method doesn't load the collection instances into the cache, but generates an SQL query which returns the number of objects from the database. If you are going to work with the collection objects (iterate over the collection or change the object attributes), you might want to use the :py:meth:`~Set.__len__` method.
 
@@ -1464,11 +1464,12 @@ Queries and functions
 
 Below is the list of upper level functions defined in Pony:
 
-.. py:function:: avg(gen)
+.. py:function:: avg(gen, distinct=None)
 
     Return the average value for all selected attributes.
 
     :param generator gen: Python generator expression
+    :param bool distinct: distinct option
     :rtype: numeric
 
     .. code-block:: python
@@ -1510,11 +1511,12 @@ Below is the list of upper level functions defined in Pony:
     Save all changes which were made within the current :py:func:`db_session` using the :py:func:`flush` function and commits the transaction to the database. This top level :py:func:`commit` function calls the :py:meth:`~Database.commit` method of each database object which was used in current transaction.
 
 
-.. py:function:: count(gen)
+.. py:function:: count(gen, distinct=None)
 
     Return the number of objects that match the query condition.
 
     :param generator gen: Python generator expression
+    :param bool distinct: distinct option
     :rtype: numeric
 
     .. code-block:: python
@@ -1656,7 +1658,7 @@ This function is called automatically before executing the following functions: 
         
     The equivalent query can be generated using the :py:meth:`~Query.group_concat()` method.
     
-    .. note:: Query should return only single attribute. Also in SQLite you can't use both `distinct` and `sep` arguments at a time.
+    .. note:: Query should return only single attribute. Also in SQLite you cant use both distinct and sep arguments at a time.
 
 
 .. py:function:: JOIN(*args)
@@ -1933,11 +1935,12 @@ This function is called automatically before executing the following functions: 
             result = Person.select()
 
 
-.. py:function:: sum(gen)
+.. py:function:: sum(gen, distinct=None)
 
     Return the sum of all values selected from the database.
 
     :param generator gen: Python generator expression
+    :param bool distinct: distinct option
     :rtype: numeric
     :return: a number. If the query returns no items, the ``sum()`` method returns 0.
 
@@ -2004,7 +2007,7 @@ The generator expression and lambda queries return an instance of the ``Query`` 
 
             len(select(c for c in Customer))
 
-    .. py:method:: avg()
+    .. py:method:: avg(distinct=None)
 
         Return the average value for all selected attributes:
 
@@ -2209,7 +2212,7 @@ The generator expression and lambda queries return an instance of the ``Query`` 
         
             select(article.tag for article in Article).group_concat(sep=', #')
         
-        .. note:: In SQLite you can't use `group_concat()` with both `sep` and `distinct` arguments at a time.
+        .. note:: In SQLite you can't use `group_concat()` with both sep and distinct arguments at a time.
 
 
     .. py:method:: limit(limit, offset=None)
