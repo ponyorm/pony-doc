@@ -1654,6 +1654,8 @@ This function is called automatically before executing the following functions: 
         
 .. py:function:: group_concat(gen, sep=',', distinct=False)
 
+    *(new in version 0.7.4)*
+
     Returns string which is concatenation of given attribute.
     
     .. code-block:: python
@@ -2207,6 +2209,8 @@ The generator expression and lambda queries return an instance of the ``Query`` 
             WHERE "c"."name" LIKE 'a%%'
             
     .. py:method:: group_concat(sep=',', distinct=False)
+    
+        *(new in version 0.7.4)*
     
         Returns a string which is the concatenation of all non-NULL values of given column. 
         

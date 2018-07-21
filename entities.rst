@@ -423,6 +423,8 @@ You can find more examples of mapping customization in `an example which comes w
 Hybrid methods and properties
 -----------------------------
 
+*(new in version 0.7.4)*
+
 You can declare methods and properties inside your entity that you can use in queries. Important that hybrids and properties should contain single line return statement.
 
 .. code-block:: python
