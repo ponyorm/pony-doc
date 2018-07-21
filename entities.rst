@@ -415,5 +415,62 @@ By default, for storing many-to-many relationships between ``Student`` and ``Cou
         semester = Required(int)
         students = Set(Student, column="student_id")
         PrimaryKey(name, semester)
-
+        
 You can find more examples of mapping customization in `an example which comes with Pony ORM package <https://github.com/ponyorm/pony/blob/orm/pony/orm/examples/university1.py>`_
+        
+.. _hybrid_methods_and_properties:
+
+Hybrid methods and properties
+-----------------------------
+
+You can declare methods and properties inside your entity that you can use in queries. Important that hybrids and properties should contain single line return statement.
+
+.. code-block:: python
+
+    class Person(db.Entity):
+        first_name = Required(str)
+        last_name = Required(str)
+        cars = Set(lambda: Car)
+
+        @property
+        def full_name(self):
+            return self.first_name + ' ' + self.last_name
+
+        @property
+        def has_car(self):
+            return not self.cars.is_empty()
+
+        def cars_by_color(self, color):
+            return select(car for car in self.cars if car.color == color)
+            # or return self.cars.select(lambda car: car.color == color)
+
+        @property
+        def cars_price(self):
+            return sum(c.price for c in self.cars)
+            
+        
+    class Car(db.Entity):
+        brand = Required(str)
+        model = Required(str)
+        owner = Optional(Person)
+        year = Required(int)
+        price = Required(int)
+        color = Required(str)
+            
+    with db_session:
+        # persons' full name
+        select(p.full_name for p in Person)
+            
+        # persons that have a car
+        select(p for p in persons if p.has_car)
+            
+        # persons and his/her yellow cars
+        select((p, p.cars_by_color('yellow')) for p in Person if p.has_car)
+            
+        # sum of all cars that have owners
+        sum(p.cars_price for p in Person)
+
+
+
+
+

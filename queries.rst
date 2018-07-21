@@ -8,49 +8,51 @@ For writing queries you can use Python generator expressions or lambdas.
 Using Python generator expressions
 ----------------------------------
 
-A Python generator syntax is a very natural way of writing queries. Here is an example of a generator expression:
-
-.. code-block:: python
-
-    (expression for x in s if condition)
-
-The meaning of this generator expression is the following:
-
-.. code-block:: python
-
-    for x in s:
-        if condition:
-            yield expression
-
-
-Pony provides a number of functions, for example :py:func:`select`, that receive a generator expression, and then translate this generator into a SQL query. The process of the translation is described in this `StackOverflow question <http://stackoverflow.com/questions/16115713/how-pony-orm-does-its-tricks>`_.
+Pony allows to use generator expressions as a very natural way of writing database queries. Pony provides :py:func:`select` function which accepts Python generator, translates it to SQL and returns objects from the database. The process of the translation is described in this `StackOverflow question <http://stackoverflow.com/questions/16115713/how-pony-orm-does-its-tricks>`_.
 
 Here is an example of a query:
 
 .. code-block:: python
 
-    select(c for c in Customer if sum(c.orders.total_price) > 1000)
+    query = select(c for c in Customer
+                   if sum(o.total_price for o in c.orders) > 1000)
 
-This query returns an instance of a :py:class:`Query` class, and you can then call the :py:class:`Query` object methods for getting the result, for example:
+or, with :ref:`attribute lifting <attribute_lifting>`:
+
+.. code-block:: python
+  
+    query = select(c for c in Customer
+                   if sum(c.orders.total_price) > 1000)
+
+You can apply :py:func:`filter()` function to query
 
 .. code-block:: python
 
-    select(c for c in Customer if sum(c.orders.total_price) > 1000).first()
+    query2 = query.filter(lambda person: person.age > 18)
 
-Besides the list of entities, you can return either a list of attributes:
+Also you can make new query based on another query:    
+    
+.. code-block:: python
+
+    query3 = select(customer.name for customer in query2
+                    if customer.country == 'Canada')
+
+
+:py:func:`select` function returns an instance of a :py:class:`Query` class, and you can then call the :py:class:`Query` object methods for getting the result, for example:
 
 .. code-block:: python
 
-    select(c.name for c in Customer if sum(c.orders.total_price) > 1000)
+    customer_name = query3.first()
 
-Or a list of tuples:
+
+From query you can return entity, attribute or tuple of arbitrary expressions
 
 .. code-block:: python
 
-    select((c, sum(c.orders.total_price)) for c in Customer
-                                          if sum(c.orders.total_price) > 1000)
+    select((c, sum(c.orders.total_price))
+           for c in Customer if sum(c.orders.total_price) > 1000)
 
-
+           
 Using lambda functions
 ----------------------
 
