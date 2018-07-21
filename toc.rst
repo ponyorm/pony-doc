@@ -16,3 +16,4 @@ Pony ORM
    aggregations
    json
    api_reference
+   integration_with_flask
