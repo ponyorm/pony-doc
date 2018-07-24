@@ -463,11 +463,11 @@ You can declare methods and properties inside your entity that you can use in qu
         # persons' full name
         select(p.full_name for p in Person)
             
-        # persons that have a car
-        select(p for p in persons if p.has_car)
+        # persons who have a car
+        select(p for p in Person if p.has_car)
             
-        # persons and his/her yellow cars
-        select((p, p.cars_by_color('yellow')) for p in Person if p.has_car)
+        # persons who have yellow cars
+        select(p for p in Person if count(p.cars_by_color('yellow')) > 1)
             
         # sum of all cars that have owners
         sum(p.cars_price for p in Person)
