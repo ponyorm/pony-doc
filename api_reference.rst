@@ -74,7 +74,7 @@ Database class
 
     .. py:method:: disconnect()
 
-        Close the database connection for the current thread if it was opened.
+        Closes the database connection for the current thread if it was opened.
 
 
 
@@ -95,6 +95,28 @@ Database class
         :param str table_name: the name of the table to be deleted, case sensitive.
         :param bool if_exists: when ``True``, it will not raise the ``TableDoesNotExist`` exception if there is no such table in the database.
         :param bool with_all_data: if the table is not empty the method will raise the ``TableIsNotEmpty`` exception.
+
+    .. py:method:: @on_connect(provider=None)
+
+        Registers function that will be called each time new connection for given provider will establish. If provider not specified function will be call for every provider.
+        The function should be registered before `db.bind(...)` call, also it should have 2 positional arguments:
+
+        :param Database db: database object
+        :param DBAPIConnection connection: connection object
+
+        .. code-block:: python
+
+            db = Database()
+
+            # entities declaration
+
+            @db.on_connect(provider='sqlite')
+            def sqlite_case_sensitivity(db, connection):
+                cursor = connection.cursor()
+                cursor.execute('PRAGMA case_sensitive_like = OFF')
+
+            db.bind(**options)
+            db.generate_mapping(create_tables=True)
 
 
 
@@ -2223,7 +2245,7 @@ The generator expression and lambda queries return an instance of the ``Query`` 
         .. note:: In SQLite you can't use `group_concat()` with both sep and distinct arguments at a time.
 
 
-    .. py:method:: limit(limit, offset=None)
+    .. py:method:: limit(limit=None, offset=None)
 
         Limit the number of instances to be selected from the database.
 
@@ -2232,6 +2254,8 @@ The generator expression and lambda queries return an instance of the ``Query`` 
             select(c for c in Customer).order_by(Customer.name)[20:30]
 
         Also you can use the :py:meth:`~Query.[start:end]` or :py:meth:`~Query.page` methods for the same purpose.
+
+        (*Since version 0.7.6 limit can be None*)
 
 
     .. py:method:: max()

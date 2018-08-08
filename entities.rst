@@ -362,6 +362,14 @@ If you need to set your own table name use the ``_table_`` class attribute:
         _table_ = "person_table"
         name = Required(str)
 
+Also you can set schema name:
+
+.. code-block:: python
+
+    class Person(db.Entity):
+        _table_ = ("my_schema", "person_table")
+        name = Required(str)
+
 If you need to set your own column name, use the option ``column``:
 
 .. code-block:: python

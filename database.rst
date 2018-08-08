@@ -153,7 +153,26 @@ It is possible to have a Python expressions inside the query text, for example:
 
 If you need to use the $ sign as a string literal inside the query, you need to escape it using another $ (put two $ signs in succession: $$).
 
+Customizing connection behavior
+-------------------------------
 
+You can execute some queries to specify your connection (i.e. pragmas) using :py:func:`db.on_connect` decorator.
+
+.. code-block:: python
+
+    db = Database()
+
+    # entities declaration
+
+    @db.on_connect(provider='sqlite')
+    def sqlite_case_sensitivity(db, connection):
+        cursor = connection.cursor()
+        cursor.execute('PRAGMA case_sensitive_like = OFF')
+
+    db.bind(**options)
+    db.generate_mapping(create_tables=True)
+
+With following code each new sqlite connection will call this function. This example shows how to restore old case insensitive `like` for sqlite.
 
 Database statistics
 -------------------
