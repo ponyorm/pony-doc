@@ -118,7 +118,7 @@ Database class
             db.bind(**options)
             db.generate_mapping(create_tables=True)
 
-
+        (*New in version 0.7.6*)
 
     .. py:attribute:: Entity
 
