@@ -96,9 +96,9 @@ Database class
         :param bool if_exists: when ``True``, it will not raise the ``TableDoesNotExist`` exception if there is no such table in the database.
         :param bool with_all_data: if the table is not empty the method will raise the ``TableIsNotEmpty`` exception.
 
-    .. py:method:: @on_connect(provider=None)
+    .. py:method:: on_connect(provider=None)
 
-        Registers function that will be called each time new connection for given provider will establish. If provider not specified function will be call for every provider.
+        Registers function that will be called each time new connection for given provider will establish. If provider not specified function will be called for every provider.
         The function should be registered before `db.bind(...)` call, also it should have 2 positional arguments:
 
         :param Database db: database object
