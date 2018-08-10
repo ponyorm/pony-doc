@@ -14,7 +14,7 @@ Database class
 
 .. py:class:: Database
 
-    The ``Database`` object manages database connections using a connection pool. It is thread safe and can be shared between all threads in your application. The ``Database`` object allows working with the database directly using SQL, but most of the time you will work with entities and let Pony generate SQL statements for makeing the corresponding changes in the database. You can work with several databases at the same time, having a separate ``Database`` object for each database, but each entity always belongs to one database.
+    The ``Database`` object manages database connections using a connection pool. It is thread safe and can be shared between all threads in your application. The ``Database`` object allows working with the database directly using SQL, but most of the time you will work with entities and let Pony generate SQL statements for making the corresponding changes in the database. You can work with several databases at the same time, having a separate ``Database`` object for each database, but each entity always belongs to one database.
 
 
 
@@ -197,7 +197,7 @@ Database class
 
         Map declared entities to the corresponding tables in the database. Creates tables, foreign key references and indexes if necessary.
 
-        :param bool check_tables: when ``True``, Pony makes a simple check that the table names and attribute names in the database correspond to entities declaration. It doesn’t catch situations when the table has extra columns or when the type of a particular column doesn’t match. Set it to ``False`` if you want to generate mapping and create tables for your entities later, using the method :py:meth:`~Database.create_tables`.
+        :param bool check_tables: when ``True``, Pony makes a simple check that the table names and attribute names in the database correspond to entities declaration. It doesn’t catch situations when the table has extra columns or when the type of particular column doesn’t match. Set it to ``False`` if you want to generate mapping and create tables for your entities later, using the method :py:meth:`~Database.create_tables`.
         :param bool create_tables: create tables, foreign key references and indexes if they don’t exist. Pony generates the names of the database tables and columns automatically, but you can override this behavior if you want. See more details in the :ref:`Mapping customization <mapping_customization>` section.
 
 
@@ -206,14 +206,14 @@ Database class
 
         Select one row or just one value from the database.
 
-        The ``get()`` method assumes that the query returns exactly one row. If the query returns nothing then Pony raises ``RowNotFound`` exception. If the query returns more than one row, the exception ``MultipleRowsFound`` will be raised.
+        The ``get()`` method assumes that the query returns exactly one row. If the query returns nothing Pony raises ``RowNotFound`` exception. If the query returns more than one row, the exception ``MultipleRowsFound`` will be raised.
 
         Before executing the provided SQL, Pony flushes all changes made within the current :py:func:`db_session` using the :py:meth:`~Database.flush` method.
 
         :param str sql: the SQL statement text.
         :param dict globals:
         :param dict locals: optional parameters which can contain dicts with variables and its values, used within the query.
-        :return: a tuple or a value. If your request returns a lot of columns then you can assign the resulting tuple of the ``get()`` method to a variable and work with it the same way as it is described in :py:meth:`~Database.select` method.
+        :return: a tuple or a value. If your request returns a lot of columns you can assign the resulting tuple of the ``get()`` method to a variable and work with it the same way as it is described in :py:meth:`~Database.select` method.
 
         Example:
 
@@ -244,7 +244,7 @@ Database class
 
         Insert new rows into a table. This command bypasses the identity map cache and can be used in order to increase the performance when you need to create lots of objects and not going to read them in the same transaction. Also you can use the :py:meth:`~Database.execute` method for this purpose. If you need to work with those objects in the same transaction it is better to create instances of entities and have Pony to save them in the database.
 
-        :param str table_name|entity: the name of the table where the data will be inserted. The name is case sensitive. Instead of the ``table_name`` you can use the ``entity`` class. In this case Pony will insert into the table associated with the ``entity``.
+        :param str table_name|entity: the name of the table where the data will be inserted. The name is case-sensitive. Instead of the ``table_name`` you can use the ``entity`` class. In this case Pony will insert into the table associated with the ``entity``.
         :param str returning: the name of the column that holds the automatically generated primary key. If you want the ``insert()`` method to return the value which is generated by the database, you should specify the name of the primary key column.
         :param dict kwargs: named parameters used within the query.
 
@@ -363,7 +363,7 @@ MySQL
 
     db.bind(provider='mysql', host='', user='', passwd='', db='')
 
-Pony tries to use the MySQLdb driver for working with MySQL. If this module cannot be imported, Pony tries to use pymysql. See the `MySQLdb <http://mysql-python.sourceforge.net/MySQLdb.html#functions-and-attributes>`_ and `pymysql <https://pypi.python.org/pypi/PyMySQL>`_ documentation for more information regarding these drivers.
+Pony tries to use the MySQLdb driver for working with MySQL. If this module cannot be imported, Pony tries to use pymysql. See the `MySQLdb <http://mysql-python.sourceforge.net/MySQLdb.html#functions-and-attributes>`_ and `pymysql <https://pypi.python.org/pypi/PyMySQL>`_ documentation for more information about these drivers.
 
 .. _oracle:
 
