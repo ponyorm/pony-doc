@@ -2251,7 +2251,7 @@ The generator expression and lambda queries return an instance of the ``Query`` 
 
         .. code-block:: python
 
-            select(c for c in Customer).order_by(Customer.name)[20:30]
+            select(c for c in Customer).limit(10, offset=30)
 
         Also you can use the :py:meth:`~Query.[start:end]` or :py:meth:`~Query.page` methods for the same purpose.
 
