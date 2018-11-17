@@ -15,5 +15,6 @@ Pony ORM
    working_with_relationships
    aggregations
    json
+   array
    api_reference
    integration_with_flask
