@@ -34,6 +34,12 @@ These types can be imported from ``pony.orm`` package:
    db.bind('sqlite', ':memory:')
    db.generate_mapping(create_tables=True)
 
+    with db_session:
+        Product(name='Apple MacBook', stars=[0, 2, 0, 5, 10], tags=['Apple', 'Notebook'])
+
+
+.. note::
+    Optional arrays are declared as NOT NULL by default and use empty array as default value. To make it nullable you should pass ``nullable=True`` option.
 
 .. note::
 
@@ -44,25 +50,24 @@ These types can be imported from ``pony.orm`` package:
 Operations with arrays
 ----------------------
 
-Change array's items
+Accessing array items
+~~~~~~~~~~~~~~~~~~~~~
 
-.. code-block:: python
-
-    product = Product.select().first()
-    product.tags.append('reconstructed')
+In PonyORM array indexes are zero-based, as in Python. It is possible to use negative indexes to access array from the end.
+You can also use array slices.
 
 Select specific item of array
 
 .. code-block:: python
 
-    tags1 = select(p.tags[2] for p in Product)[:]
-    tags2 = select(p.tags[-5] for p in Product)[:]
+    select(p.tags[2] for p in Product)[:]  # third element
+    select(p.tags[-1] for p in Product)[:]  # last element
 
 Using slice
 
 .. code-block:: python
 
-    early_tags = select(p.tags[:10] for p in Product)[:]
+    select(p.tags[:5] for p in Product)[:]  # first five elements
 
 .. note::
     Steps are not supported for slices.
@@ -71,8 +76,14 @@ Check if item or list of items in or not in array
 
 .. code-block:: python
 
-    products1 = select(p for p in Product if 'apple' in p.tags)[:]
-    products2 = select(p for p in Product if ['LCD', 'DVD', 'SSD'] in p.tags)[:]
+    select(p for p in Product if 'apple' in p.tags)[:]
+    select(p for p in Product if ['LCD', 'DVD', 'SSD'] in p.tags)[:]
 
 
+Change array's items
 
+.. code-block:: python
+
+    product = Product.select().first()
+    product.tags.remove('factory-new')
+    product.tags.append('reconstructed')
