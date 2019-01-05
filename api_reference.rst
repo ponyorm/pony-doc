@@ -1306,9 +1306,13 @@ Entity methods
         If you find that you cannot express a query using the standard Pony queries, you always can write your own SQL query and Pony will build an entity instance(s) based on the query results. When Pony gets the result of the SQL query, it analyzes the column names which it receives from the database cursor. If your query uses ``SELECT * ...`` from the entity table, that would be enough for getting the necessary attribute values for constructing entity instances. You can pass parameters into the query, see :ref:`Using the select_by_sql() and get_by_sql() methods <entities_raw_sql_ref>` for more information.
 
 
-    .. py:classmethod:: get_for_update(*args, **kwargs, nowait=False)
+    .. py:classmethod:: get_for_update(*args, **kwargs, nowait=False, skip_locked=False)
+
+        .. note:: 
+            `nowait` and `skip_locked` parameters are mutually exclusive.
 
         :param bool nowait: prevent the operation from waiting for other transactions to commit. If a selected row(s) cannot be locked immediately, the operation reports an error, rather than waiting.
+        :param bool skip_locked: add SKIP LOCKED option to FOR UPDATE clause
 
         Locks the row in the database using the ``SELECT ... FOR UPDATE`` SQL query. If ``nowait=True``, then the method will throw an exception if this row is already blocked. If ``nowait=False``, then it will wait if the row is already blocked.
 
@@ -1343,9 +1347,9 @@ Entity methods
             obj.load('biography', 'some_other_field')
 
 
-    .. py:classmethod:: select(lambda)
+    .. py:classmethod:: select(lambda=None, **kwargs)
 
-        Select objects from the database in accordance with the condition specified in lambda, or all objects if lambda function is not specified.
+        Select objects from the database in accordance with the condition specified in lambda or keyword arguments, or all objects if lambda function is not specified.
 
         The ``select()`` method returns an instance of the :py:class:`Query` class. Entity instances will be retrieved from the database once you start iterating over the ``Query`` object.
 
@@ -1353,7 +1357,10 @@ Entity methods
 
         .. code-block:: python
 
-            Product.select(lambda p: p.price > 100 and count(p.order_items) > 1)[:]
+            Product.select(lambda p: p.price > 100 and count(p.order_items) > 1)
+            Product.select(item_type='TV')
+
+        .. note:: Since version 0.7.7 `select` can also be used with keyword arguments
 
 
     .. py:classmethod:: select_by_sql(sql, globals=None, locals=None)
@@ -1978,6 +1985,44 @@ This function is called automatically before executing the following functions: 
 
     The equivalent query can be generated using the :py:meth:`~Query.sum` method.
 
+.. py:function:: refresh(obj)
+
+    In Pony you can't use object that doesn’t belong to current db_session.
+    So if you have object from one of previous db_sessions you can use this function to get same object belonging to current db_session
+
+    :param entity obj: entity object
+    :rtype: Entity
+    :return: new object that belongs to current session.
+
+    .. code-block:: python
+
+        with db_session:
+            s = Student[1] 
+
+        ...
+
+        with db_session: 
+            s = refresh(s)
+
+.. py:function:: make_proxy(obj)
+
+    Make a proxy object for given object. By proxy object we call object which can be used in different sessions. It might be useful for applications that are not request-based (for example GUI standalone application).
+
+    :param entity obj: entity object
+    :rtype: EntityProxy
+    :return: proxy object.
+
+
+    .. code-block:: python
+
+        with db_session:
+            user = User[id=id]
+            current_user = make_proxy(user)
+
+        ...
+
+        with db_session:
+            print(current_user.name)
 
 .. _query_object:
 
@@ -2191,9 +2236,15 @@ The generator expression and lambda queries return an instance of the ``Query`` 
             select(p for p in Product if p.price > 100).first()
 
 
-    .. py:method:: for_update(nowait=False)
+    .. py:method:: for_update(nowait=False, skip_locked=False)
+        
+        .. note:: 
+            `nowait` and `skip_locked` parameters are mutually exclusive.
+
 
         :param bool nowait: prevent the operation from waiting for other transactions to commit. If a selected row(s) cannot be locked immediately, the operation reports an error, rather than waiting.
+        :param bool skip_locked: add SKIP LOCKED option to FOR UPDATE clause
+
 
         Sometimes there is a need to lock objects in the database in order to prevent other transactions from modifying the same instances simultaneously. Within the database such lock should be done using the SELECT FOR UPDATE query. In order to generate such a lock using Pony you can call the ``for_update`` method:
 

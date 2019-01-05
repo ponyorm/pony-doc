@@ -175,6 +175,9 @@ Pony supports the following attribute types:
 * LongUnicode - used for large strings
 * UUID
 * Json - used for mapping to native database JSON type
+* IntArray - array of integers
+* StrArray - array of strings
+* FloatArray - array of floats
 
 See the :ref:`Attribute types <attribute_types>` part of the API Reference for more information.
 
@@ -218,6 +221,12 @@ In some mappers (e.g. Django) a query on a base entity doesn’t return the righ
             print p.name, p.gpa
         else:  # somebody else
             print p.name
+
+.. note:: Since version 0.7.7 you can use `isinstance()` inside query
+
+.. code-block:: python
+
+    staff = select(p for p in Person if not isinstance(p, Student))
 
 In order to create the correct entity instance Pony uses a discriminator column. By default this is a string column and Pony uses it to store the entity class name:
 
