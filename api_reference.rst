@@ -1985,24 +1985,6 @@ This function is called automatically before executing the following functions: 
 
     The equivalent query can be generated using the :py:meth:`~Query.sum` method.
 
-.. py:function:: refresh(obj)
-
-    In Pony you can't use object that doesn’t belong to current db_session.
-    So if you have object from one of previous db_sessions you can use this function to get same object belonging to current db_session
-
-    :param entity obj: entity object
-    :rtype: Entity
-    :return: new object that belongs to current session.
-
-    .. code-block:: python
-
-        with db_session:
-            s = Student[1] 
-
-        ...
-
-        with db_session: 
-            s = refresh(s)
 
 .. py:function:: make_proxy(obj)
 
