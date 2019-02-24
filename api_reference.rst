@@ -617,6 +617,12 @@ Pony supports the following attribute types:
 * LongUnicode - used for large strings
 * UUID
 * Json - used for mapping to native database JSON type
+* IntArray
+* StrArray
+* FloatArray
+
+.. note:: 
+    `IntArray`, `StrArray` and `FloatArray` types are supported only in PostgreSQL and SQLite.
 
 Also you can specify another entity as the attribute type for defining a relationship between two entities.
 
@@ -2726,7 +2732,7 @@ The ``Database`` object has a thread-local property :py:attr:`~Database.local_st
 
         Total time spent (is equal to `avg_time` * `db_count`)
 
-Pony keeps all statistics separately for each thread. If you want to see the aggregated statistics for all threads then you need to call the :py:meth:`~Database.merge_local_stats()` method. See also: :py:meth:`~Database.local_stats`, :py:meth:`~Database.global_stats`, .
+Pony keeps all statistics separately for each thread. If you want to see the aggregated statistics for all threads then you need to call the :py:meth:`~Database.merge_local_stats()` method. See also: :py:meth:`~Database.local_stats`, :py:meth:`~Database.global_stats`.
 
 Example:
 
