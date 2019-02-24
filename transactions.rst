@@ -11,7 +11,7 @@ Pony provides automatic transaction management using the database session.
 Working with db_session
 -----------------------
 
-The code which interacts with the database has to be placed within a database session. The session sets the borders of a conversation with the database. Each application thread which works with the database establishes a separate database session and uses a separate instance of an Identity Map. This Identity Map works as a cache, helping to avoid a database query when you access an object by its primary or unique key and it is already stored in the Identity Map.
+The code which interacts with the database has to be placed within a database session. The session sets the borders of a conversation with the database. Each application thread which works with the database establishes a separate database session and uses a separate instance of an `Identity Map <https://martinfowler.com/eaaCatalog/identityMap.html>`_. This Identity Map works as a cache, helping to avoid a database query when you access an object by its primary or unique key and it is already stored in the Identity Map.
 In order to work with the database using the database session you can use the :py:func:`@db_session` decorator or :py:func:`db_session` context manager. When the session ends it does the following actions:
 
 * Commits transaction if data was changed and no exceptions occurred otherwise it rolls back transaction.
@@ -95,6 +95,18 @@ Nested db_session
 ~~~~~~~~~~~~~~~~~
 
 If you enter the :py:func:`db_session` scope recursively, for example by calling a function which is decorated with the ``@db_session`` decorator from another function which is decorated with :py:func:`@db_session`, Pony will not create a new session, but will share the same session for both functions. The database session ends on leaving the scope of the outermost :py:func:`db_session` decorator or context manager.
+
+What if inner :py:func:`db_session` has different settings? For example, the outer one is a default :py:func:`db_session` and the inner one is defined as ``db_session(optimistic=False)``?
+
+Currently Pony checks inner ``db_session`` options, and does one of the following:
+
+1. If inner ``db_session`` uses options incompatible with the outer ``db_session`` (``ddl=True`` or ``serializable=True``), Pony throws an exception.
+2. For ``sql_debug`` option Pony uses new sql_debug option value inside the inner ``db_session`` and restores it when returning to the outer ``db_session``.
+3. Other options (``strict``, ``optimistic``, ``immediate`` and ``retry``) are ignored for the inner ``db_session``.
+
+If ``rollback()`` is called inside inner ``db_session``, it will be applied to the outer ``db_session``.
+
+Some databases support nested transactions, but at the moment Pony doesn't support this.
 
 
 db_session cache
