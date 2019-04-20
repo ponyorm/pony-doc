@@ -707,6 +707,8 @@ Also you can use ``precision`` and ``scale`` options:
     class Product(db.Entity):
         price = Required(Decimal, precision=10, scale=2)   #  DECIMAL(10, 2)
 
+If you don't specify the ``precision`` and ``scale`` parameters, Pony uses ``Decimal(precision=12, scale=2)`` values by default.
+
 
 Datetime, time and timedelta precision
 ``````````````````````````````````````
