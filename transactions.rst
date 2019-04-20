@@ -94,17 +94,17 @@ If you need to have more than one transaction within the same database session y
 Nested db_session
 ~~~~~~~~~~~~~~~~~
 
-If you enter the :py:func:`db_session` scope recursively, for example by calling a function which is decorated with the ``@db_session`` decorator from another function which is decorated with :py:func:`@db_session`, Pony will not create a new session, but will share the same session for both functions. The database session ends on leaving the scope of the outermost :py:func:`db_session` decorator or context manager.
+If you enter the :py:func:`db_session` scope recursively, for example by calling a function which is decorated with the :py:func:`db_session` decorator from another function which is decorated with :py:func:`db_session`, Pony will not create a new session, but will share the same session for both functions. The database session ends on leaving the scope of the outermost :py:func:`db_session` decorator or context manager.
 
 What if inner :py:func:`db_session` has different settings? For example, the outer one is a default :py:func:`db_session` and the inner one is defined as ``db_session(optimistic=False)``?
 
-Currently Pony checks inner ``db_session`` options, and does one of the following:
+Currently Pony checks inner :py:func:`db_session` options, and does one of the following:
 
-1. If inner ``db_session`` uses options incompatible with the outer ``db_session`` (``ddl=True`` or ``serializable=True``), Pony throws an exception.
-2. For ``sql_debug`` option Pony uses new sql_debug option value inside the inner ``db_session`` and restores it when returning to the outer ``db_session``.
-3. Other options (``strict``, ``optimistic``, ``immediate`` and ``retry``) are ignored for the inner ``db_session``.
+1. If inner :py:func:`db_session` uses options incompatible with the outer :py:func:`db_session` (``ddl=True`` or ``serializable=True``), Pony throws an exception.
+2. For ``sql_debug`` option Pony uses new sql_debug option value inside the inner :py:func:`db_session` and restores it when returning to the outer :py:func:`db_session`.
+3. Other options (``strict``, ``optimistic``, ``immediate`` and ``retry``) are ignored for the inner :py:func:`db_session`.
 
-If ``rollback()`` is called inside inner ``db_session``, it will be applied to the outer ``db_session``.
+If :py:func:`rollback` is called inside inner :py:func:`db_session`, it will be applied to the outer :py:func:`db_session`.
 
 Some databases support nested transactions, but at the moment Pony doesn't support this.
 
