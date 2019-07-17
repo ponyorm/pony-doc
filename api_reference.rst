@@ -2006,7 +2006,7 @@ This function is called automatically before executing the following functions: 
     .. code-block:: python
 
         with db_session:
-            user = User[id=id]
+            user = User[id]
             current_user = make_proxy(user)
 
         ...
