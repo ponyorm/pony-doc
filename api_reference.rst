@@ -868,7 +868,7 @@ Below you can find the list of available options:
 
 .. option:: reverse_columns
 
-    (*str*) Used for a symmetric relationship if the entity has a composite primary key. Allows you to specify the name of the database columns for the intermediate table.
+    (*list*) Used for a symmetric relationship if the entity has a composite primary key. Allows you to specify the name of the database columns for the intermediate table.
 
 
 .. option:: scale
