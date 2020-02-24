@@ -10,11 +10,12 @@ To install Pony, type the following command into the command prompt:
 
     pip install pony
 
-Pony can be installed on Python 2.7 or Python 3. If you are going to work with SQLite database, you don't need to install anything else. If you wish to use another database, you need to have the corresponding database driver installed:
+Pony can be installed on Python 2.7 or Python 3. If you are going to work with SQLite database, you don't need to install anything else. If you wish to use another database, you need to have the access to the database and have the corresponding database driver installed:
 
-* PostgreSQL: `psycopg <http://initd.org/psycopg/docs/install.html#installation>`_ or `psycopg2cffi <https://pypi.python.org/pypi/psycopg2cffi>`_
+* PostgreSQL: `psycopg2 <http://initd.org/psycopg/docs/install.html#installation>`_ or `psycopg2cffi <https://pypi.python.org/pypi/psycopg2cffi>`_
 * MySQL: `MySQL-python <https://pypi.python.org/pypi/MySQL-python/>`_ or `PyMySQL <https://pypi.python.org/pypi/PyMySQL>`_
 * Oracle: `cx_Oracle <https://pypi.python.org/pypi/cx_Oracle>`_
+* CockroachDB: `psycopg2 <http://initd.org/psycopg/docs/install.html#installation>`_ or `psycopg2cffi <https://pypi.python.org/pypi/psycopg2cffi>`_
 
 To make sure Pony has been successfully installed, launch a Python interpreter in interactive mode and type:
 
@@ -103,7 +104,7 @@ The database object has the :py:func:`Database.bind()` method. It is used for at
 
     >>> db.bind(provider='sqlite', filename=':memory:')
 
-Currently Pony supports 4 database types: ``'sqlite'``, ``'mysql'``, ``'postgresql'`` and ``'oracle'``. The subsequent parameters are specific to each database. They are the same ones that you would use if you were connecting to the database through the DB-API module.
+Currently Pony supports 5 database types: ``'sqlite'``, ``'mysql'``, ``'postgresql'``, ``'cockroach'`` and ``'oracle'``. The subsequent parameters are specific to each database. They are the same ones that you would use if you were connecting to the database through the DB-API module.
 
 For SQLite, either the database filename or the string ':memory:' must be specified as the parameter, depending on where the database is being created. If the database is created in-memory, it will be deleted once the interactive session in Python is over. In order to work with the database stored in a file, you can replace the previous line with the following:
 
@@ -133,6 +134,8 @@ Here is how you can get connected to the databases:
     # Oracle
     db.bind(provider='oracle', user='', password='', dsn='')
 
+    # CockroachDB
+    db.bind(provider='cockroach', user='', password='', host='', database='', )
 
 Mapping entities to database tables
 -----------------------------------

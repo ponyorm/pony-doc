@@ -23,7 +23,7 @@ Database class
 
         Bind entities to a database.
 
-        :param str provider: the name of the database provider. The database provider is a module which resides in the ``pony.orm.dbproviders`` package. It knows how to work with a particular database. After the database provider name you should specify parameters which will be passed to the ``connect()`` method of the corresponding DBAPI driver. Pony comes with the following providers: "sqlite", "postgres", "mysql", "oracle". This parameter can be used as a keyword argument as well.
+        :param str provider: the name of the database provider. The database provider is a module which resides in the ``pony.orm.dbproviders`` package. It knows how to work with a particular database. After the database provider name you should specify parameters which will be passed to the ``connect()`` method of the corresponding DBAPI driver. Pony comes with the following providers: "sqlite", "postgres", "mysql", "oracle", "cockroachdb". This parameter can be used as a keyword argument as well.
         :param args: parameters required by the database driver.
         :param kwargs: parameters required by the database driver.
 
@@ -38,6 +38,7 @@ Database class
             db.bind('postgres', user='', password='', host='', database='')
             db.bind('mysql', host='', user='', passwd='', db='')
             db.bind('oracle', 'user/password@dsn')
+            db.bind('cockroach', user='', password='', host='', database='', sslmode='disable')
 
         Also you can use keyword arguments for passing the parameters:
 
@@ -48,6 +49,7 @@ Database class
             db.bind(provider='postgres', user='', password='', host='', database='')
             db.bind(provider='mysql', host='', user='', passwd='', db='')
             db.bind(provider='oracle', user='', password='', dsn='')
+            db.bind(provider='cockroach', user='', password='', host='', database='', sslmode='disable')
 
         This allows keeping these parameters in a dict:
 
@@ -376,6 +378,29 @@ Oracle
 
 Pony uses the **cx_Oracle** driver for connecting to Oracle databases. More information about the parameters which you can use for creating a connection to Oracle database can be found `here <http://cx-oracle.sourceforge.net>`_.
 
+.. _cockroachdb:
+
+CockroachDB
+~~~~~~~~~~~
+
+Pony uses psycopg2 driver in order to work with CockroachDB. In order to bind the ``Database`` object to CockroachDB use the following line:
+
+.. code-block:: python
+
+    db.bind(provider='cockroach', user='', password='', host='', database='', sslmode='disable')
+
+All the parameters that follow the Pony database provider name will be passed to the CockroachDB driver.
+
+If you want to use a secure connection to the CockroachDB, you have to specify additional parameters:
+
+.. code-block:: python
+
+    db.bind(provider='cockroach', user='', password='', host='', database='', port=26257,
+        sslmode='require', sslrootcert='certs/ca.crt', sslkey='certs/client.maxroach.key',
+        sslcert='certs/client.maxroach.crt')
+
+
+
 
 Transactions & db_session
 -------------------------
@@ -494,7 +519,10 @@ Oracle
 Oracle uses the READ COMMITTED isolation level by default. Oracle doesn’t have the autocommit mode. The transaction begins with the first SQL statement sent to the database even if this is a SELECT statement.
 
 
+CockroachDB
+```````````
 
+TBD
 
 
 .. _entity_definition:

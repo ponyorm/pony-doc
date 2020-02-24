@@ -161,7 +161,7 @@ In order to specify values you can use parameters:
    # products with width resolution greater or equal to x
    Product.select(lambda p: p.info['display']['resolution'][0] >= x)
 
-In MySQL, PostgreSQL and SQLite it is also possible to use parameters inside JSON path expression:
+In MySQL, PostgreSQL, CockroachDB and SQLite it is also possible to use parameters inside JSON path expression:
 
 .. code-block:: python
 
@@ -237,7 +237,7 @@ For storing JSON in the database Pony uses the following types:
 
  * `SQLite <https://sqlite.org/json1.html>`_ - TEXT
 
- * `PostgreSQL <https://www.postgresql.org/docs/current/static/functions-json.html>`_ - JSONB (binary JSON)
+ * `PostgreSQL and CockroachDB <https://www.postgresql.org/docs/current/static/functions-json.html>`_ - JSONB (binary JSON)
 
  * `MySQL <https://dev.mysql.com/doc/refman/5.7/en/json.html>`_ - JSON (binary JSON, although it doesn't have 'B' in the name)
 

@@ -361,7 +361,7 @@ Mapping customization
 
 When Pony creates tables from entity definitions, it uses the name of entity as the table name and attribute names as the column names, but you can override this behavior.
 
-The name of the table is not always equal to the name of an entity: in MySQL and PostgreSQL the default table name generated from the entity name will be converted to the lower case, in Oracle - to the upper case. You can always find the name of the entity table by reading the ``_table_`` attribute of an entity class.
+The name of the table is not always equal to the name of an entity: in MySQL, PostgreSQL and CockroachDB the default table name generated from the entity name will be converted to the lower case, in Oracle - to the upper case. You can always find the name of the entity table by reading the ``_table_`` attribute of an entity class.
 
 If you need to set your own table name use the ``_table_`` class attribute:
 

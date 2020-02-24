@@ -5,7 +5,7 @@ Array Data Type Support
 Overview
 --------
 
-Since Pony version 0.7.7 we add support of Array type for PostgreSQL and SQLite. It implements PostgreSQL's arrays.
+Since Pony version 0.7.7 we add support of Array type for PostgreSQL, CockroachDB and SQLite. It implements PostgreSQL's arrays.
 JSON type is more flexible, but in some cases Array type might be more efficient.
 
 Declaring an Array attribute

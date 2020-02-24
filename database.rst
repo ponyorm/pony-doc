@@ -48,7 +48,7 @@ Before we can map entities to the database, we need to connect to establish conn
 
 The first parameter of this method is the name of the database provider. The database provider is a module which resides in the ``pony.orm.dbproviders`` package and which knows how to work with a particular database. After the database provider name you should specify parameters which will be passed to the ``connect()`` method of the corresponding DBAPI driver.
 
-Currently Pony can work with four database systems: SQLite, PostgreSQL, MySQL and Oracle, with the corresponding Pony provider names: ``'sqlite'``, ``'postgres'``, ``'mysql'`` and ``'oracle'``.  Pony can easily be extended to incorporate additional database providers.
+Currently Pony can work with the following database systems: SQLite, PostgreSQL, MySQL, Oracle, CockroachDB, with the corresponding Pony provider names: ``'sqlite'``, ``'postgres'``, ``'mysql'``, ``'oracle'`` and ``'cockroach'``.  Pony can easily be extended to incorporate additional database providers.
 
 When you just start working with Pony, you can use the SQLite database. This database is included into Python distribution and you don't need to install anything separately. Using SQLite you can create the database either in a file or in memory. For creating the database in the file use the following command:
 
@@ -81,6 +81,7 @@ You can find more details on working with each database in the API Reference:
 * :ref:`PostgreSQL <postgresql>`
 * :ref:`MySQL <mysql>`
 * :ref:`Oracle <oracle>`
+* :ref:`CockroachDB <cockroach>`
 
 
 
