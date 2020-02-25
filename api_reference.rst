@@ -38,7 +38,8 @@ Database class
             db.bind('postgres', user='', password='', host='', database='')
             db.bind('mysql', host='', user='', passwd='', db='')
             db.bind('oracle', 'user/password@dsn')
-            db.bind('cockroach', user='', password='', host='', database='', sslmode='disable')
+            db.bind('cockroach', user='', password='', host='',
+                    database='', sslmode='disable')
 
         Also you can use keyword arguments for passing the parameters:
 
@@ -49,7 +50,8 @@ Database class
             db.bind(provider='postgres', user='', password='', host='', database='')
             db.bind(provider='mysql', host='', user='', passwd='', db='')
             db.bind(provider='oracle', user='', password='', dsn='')
-            db.bind(provider='cockroach', user='', password='', host='', database='', sslmode='disable')
+            db.bind(provider='cockroach', user='', password='', host='',
+                    database='', sslmode='disable')
 
         This allows keeping these parameters in a dict:
 
@@ -387,7 +389,8 @@ Pony uses psycopg2 driver in order to work with CockroachDB. In order to bind th
 
 .. code-block:: python
 
-    db.bind(provider='cockroach', user='', password='', host='', database='', sslmode='disable')
+    db.bind(provider='cockroach', user='', password='', host='', database='',
+            sslmode='disable')
 
 All the parameters that follow the Pony database provider name will be passed to the CockroachDB driver.
 
@@ -395,9 +398,9 @@ If you want to use a secure connection to the CockroachDB, you have to specify a
 
 .. code-block:: python
 
-    db.bind(provider='cockroach', user='', password='', host='', database='', port=26257,
-        sslmode='require', sslrootcert='certs/ca.crt', sslkey='certs/client.maxroach.key',
-        sslcert='certs/client.maxroach.crt')
+    db.bind(provider='cockroach', user='', password='', host='', database='',
+            port=26257, sslmode='require', sslrootcert='certs/ca.crt',
+            sslkey='certs/client.maxroach.key', sslcert='certs/client.maxroach.crt')
 
 
 
@@ -522,7 +525,9 @@ Oracle uses the READ COMMITTED isolation level by default. Oracle doesn’t have
 CockroachDB
 ```````````
 
-TBD
+CocrkoachDB uses optimistic transactions implemented at the database level. An application should handle error with code 40001 and an error message that begins with the string "retry transaction" by retrying the code of transaction, `see more info here <https://www.cockroachlabs.com/docs/stable/transactions.html#client-side-intervention>`_.
+
+PonyORM can handle that logic automatically. If you specify ``retry=N`` option to ``db_session`` decorator, then PonyORM will automatically do N attempts to retry the code decorated with the ``db_session``. Note that ``db_session`` should be specified as a decorator and not as a context manager, as context manager in Python cannot retry the code block.
 
 
 .. _entity_definition:

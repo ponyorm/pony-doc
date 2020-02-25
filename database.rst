@@ -74,6 +74,8 @@ Here are the examples of binding to other databases:
     db.bind(provider='sqlite', filename='filename', create_db=True)
     db.bind(provider='mysql', host='', user='', passwd='', db='')
     db.bind(provider='oracle', user='', password='', dsn='')
+    db.bind(provider='cockroach', user='', password='', host='',
+            database='', sslmode='disable')
 
 You can find more details on working with each database in the API Reference:
 
@@ -81,7 +83,7 @@ You can find more details on working with each database in the API Reference:
 * :ref:`PostgreSQL <postgresql>`
 * :ref:`MySQL <mysql>`
 * :ref:`Oracle <oracle>`
-* :ref:`CockroachDB <cockroach>`
+* :ref:`CockroachDB <cockroachdb>`
 
 
 
