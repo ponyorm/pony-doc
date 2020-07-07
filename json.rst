@@ -51,7 +51,7 @@ Usually, a JSON structure contains a combination of dictionaries and lists conta
                      },
                      'battery': 3600,
                      '3.5mm jack': True,
-                     'SD card slot': True
+                     'SD card slot': True,
                      'colors': ['Black', 'Grey', 'Gold'],
                  },
                  tags=['Smartphone', 'Samsung'])
