@@ -67,7 +67,7 @@ Now, let's create two entities -- Person and Car. The entity Person has two attr
 
 The classes that we have created are derived from the :py:attr:`Database.Entity` attribute of the :py:class:`Database` object. It means that they are not ordinary classes, but entities. The entity instances are stored in the database, which is bound to the ``db`` variable. With Pony you can work with several databases at the same time, but each entity belongs to one specific database.
 
-Inside the entity ``Person`` we have created three attributes -- ``name``, ``age`` and ``cars``. The ``name`` and ``age`` are mandatory attributes. In other words, they these attributes cannot have the ``None`` value. The ``name`` is a string attribute, while ``age`` is numeric.
+Inside the entity ``Person`` we have created three attributes -- ``name``, ``age`` and ``cars``. The ``name`` and ``age`` are mandatory attributes. In other words, these attributes cannot have the ``None`` value. The ``name`` is a string attribute, while ``age`` is numeric.
 
 The ``cars`` attribute is declared as :py:class:`Set` and has the ``Car`` type. This means that this is a relationship. It can keep a collection of instances of the ``Car`` entity. ``"Car"`` is specified as a string here because we didn't declare the entity ``Car`` by that moment yet.
 
