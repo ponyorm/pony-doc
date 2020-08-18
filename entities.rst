@@ -234,7 +234,7 @@ In order to create the correct entity instance Pony uses a discriminator column.
 
     classtype = Discriminator(str)
 
-By default Pony implicitly creates the ``classtype`` attribute for each entity class which takes part in inheritance. You can use your own discriminator column name and type. If you change the type of the discriminator column, then you have to specify the ``_discrimintator_`` value for each entity.
+By default Pony implicitly creates the ``classtype`` attribute for each entity class which takes part in inheritance. You can use your own discriminator column name and type. If you change the type of the discriminator column, then you have to specify the ``_discriminator_`` value for each entity.
 
 Let’s consider the example above and use ``cls_id`` as the name for our discriminator column of ``int`` type:
 
