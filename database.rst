@@ -101,7 +101,7 @@ This method creates tables, foreign key references and indexes if they don't exi
 Methods and attributes of the Database object
 ---------------------------------------------
 
-The :py:class:`Database` object has a set of methods, which you can exampne in the :ref:`API Reference <api_reference>`.
+The :py:class:`Database` object has a set of methods, which you can examine in the :ref:`API Reference <api_reference>`.
 
 .. _raw_sql:
 
