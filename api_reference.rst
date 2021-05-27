@@ -2448,7 +2448,7 @@ The generator expression and lambda queries return an instance of the ``Query`` 
 
         Orders the results of a query. The expression in ``sort_by()`` method call applies to items in query result. Until the 0.8 release it works the same as :py:meth:`~Query.order_by`, then the behavior of ``order_by()`` will change.
 
-        There are several ways how it is possible to call ``order_by()`` method:
+        There are several ways how it is possible to call ``sort_by()`` method:
 
         **Using entity attributes**
 
