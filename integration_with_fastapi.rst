@@ -26,7 +26,64 @@ You may want to make use of Pydantic's inbuilt `BaseSettings Model`_ to manage y
 Models and Schemas
 ------------------
 
-To make Pony's models work with Pydantic's schemas...
+To make full use of FastAPI, Pony's models have to work with Pydantic's schemas.
+Unfortunately, this requires somewhat duplicate model definitions. We're following `FastAPI's example`_ here.
+
+Here are the Pony models from :doc:`Getting Started with Pony <firststeps>`:
+
+.. code-block:: python
+
+    class Person(db.Entity):
+        name = Required(str)
+        age = Required(int)
+        cars = Set('Car')
+
+    class Car(db.Entity):
+        make = Required(str)
+        model = Required(str)
+        owner = Required(Person)
+
+We want to expose `Person` in FastAPI like this:
+
+.. code-block:: python
+
+    @api.get('/persons')
+    async def read_all_persons():
+        with db_session:
+           persons = Person.select()
+           result = [PersonInDB.from_orm(p) for p in persons]
+        return result
+
+    @api.get('/person/{pid}')
+    async def read_single_person(pid: int):
+        with db_session:
+            person = Person[pid]
+            result = PersonInDB.from_orm(person)
+        return result
+
+For this, we can write the following Pydantic schemas:
+
+.. code-block:: python
+
+    class CarOut(BaseModel):
+        make: str
+        model: str
+
+    class PersonInDB(BaseModel):
+        name: str
+        age: int
+        cars: List[CarOut]
+
+        @validator('cars', pre=True, allow_reuse=True)
+        def pony_set_to_list(cls, values):
+            return [v.to_dict() for v in values]
+
+        class Config:
+            orm_mode = True
+
+Without preparation, Pony's related objects aren't interpreted correctly. Use a validator to make them accessible for Pydantic.
+
+.. _FastAPI's example: https://fastapi.tiangolo.com/tutorial/sql-databases/#create-the-pydantic-models
 
 .. todo:: Point to relevant FastAPI doc: https://fastapi.tiangolo.com/tutorial/extra-models/
 .. todo:: Maybe answer this StackOverflow Q: https://stackoverflow.com/questions/64521997/list-with-pony-orm-and-fastapi
