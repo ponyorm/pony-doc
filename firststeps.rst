@@ -106,7 +106,7 @@ The database object has the :py:func:`Database.bind()` method. It is used for at
 
 Currently Pony supports 5 database types: ``'sqlite'``, ``'mysql'``, ``'postgresql'``, ``'cockroach'`` and ``'oracle'``. The subsequent parameters are specific to each database. They are the same ones that you would use if you were connecting to the database through the DB-API module.
 
-For SQLite, either the database filename or the string ':memory:' must be specified as the parameter, depending on where the database is being created. If the database is created in-memory, it will be deleted once the interactive session in Python is over. In order to work with the database stored in a file, you can replace the previous line with the following:
+For SQLite, either the database filename or the string ':memory:' (or ':sharedmemory:' if you use threads) must be specified as the parameter, depending on where the database is being created. If the database is created in-memory, it will be deleted once the interactive session in Python is over. In order to work with the database stored in a file, you can replace the previous line with the following:
 
 .. code-block:: python
 
@@ -121,7 +121,7 @@ Here is how you can get connected to the databases:
 .. code-block:: python
 
     # SQLite
-    db.bind(provider='sqlite', filename=':memory:')
+    db.bind(provider='sqlite', filename=':sharedmemory:')
     # or
     db.bind(provider='sqlite', filename='database.sqlite', create_db=True)
 

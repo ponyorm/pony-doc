@@ -58,11 +58,16 @@ When you just start working with Pony, you can use the SQLite database. This dat
 
 When ``create_db=True``, Pony will create the database file if it doesn't exist. If it already exists, Pony will use it.
 
-For in-memory database use this:
+For in-memory database use this, if you work from a single thread:
 
 .. code-block:: python
 
   db.bind(provider='sqlite', filename=':memory:')
+
+...and this, if you need to access the same in-memory database from multiple threads:
+
+  db.bind(provider='sqlite', filename=':sharedmemory:')
+
 
 There is no need in the parameter ``create_db`` when creating an in-memory database. This is a convenient way to create a SQLite database when playing with Pony in the interactive shell, but you should remember, that the entire in-memory database will be lost on program exit.
 
@@ -70,7 +75,7 @@ Here are the examples of binding to other databases:
 
 .. code-block:: python
 
-    db.bind(provider='sqlite', filename=':memory:')
+    db.bind(provider='sqlite', filename=':sharedmemory:')
     db.bind(provider='sqlite', filename='filename', create_db=True)
     db.bind(provider='mysql', host='', user='', passwd='', db='')
     db.bind(provider='oracle', user='', password='', dsn='')

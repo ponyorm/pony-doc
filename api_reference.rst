@@ -33,7 +33,7 @@ Database class
 
         .. code-block:: python
 
-            db.bind('sqlite', ':memory:')
+            db.bind('sqlite', ':sharedmemory:')
             db.bind('sqlite', 'filename', create_db=True)
             db.bind('postgres', user='', password='', host='', database='')
             db.bind('mysql', host='', user='', passwd='', db='')
@@ -45,7 +45,7 @@ Database class
 
         .. code-block:: python
 
-            db.bind(provider='sqlite', filename=':memory:')
+            db.bind(provider='sqlite', filename=':sharedmemory:')
             db.bind(provider='sqlite', filename='db.sqlite', create_db=True)
             db.bind(provider='postgres', user='', password='', host='', database='')
             db.bind(provider='mysql', host='', user='', passwd='', db='')
@@ -333,7 +333,7 @@ Using SQLite database is the easiest way to work with Pony because there is no n
     :param bool create_db: ``True`` means that Pony will try to create the database if such filename doesn’t exists.  If such filename exists, Pony will use this file.
     :param float timeout: The ``timeout`` parameter specifies how long the connection should wait for the lock to go away until raising an exception. The default is 5.0 (five seconds). *(New in version 0.7.3)*
 
-Normally SQLite database is stored in a file on disk, but it also can be stored entirely in memory. This is a convenient way to create a SQLite database when playing with Pony in the interactive shell, but you should remember, that the entire in-memory database will be lost on program exit. Also you should not work with the same in-memory SQLite database simultaneously from several threads because in this case all threads share the same connection due to SQLite limitation.
+Normally SQLite database is stored in a file on disk, but it also can be stored entirely in memory. This is a convenient way to create a SQLite database when playing with Pony in the interactive shell, but you should remember, that the entire in-memory database will be lost on program exit.
 
   In order to bind with an in-memory database you should specify ``:memory:`` instead of the filename:
 
@@ -341,7 +341,15 @@ Normally SQLite database is stored in a file on disk, but it also can be stored 
 
       db.bind(provider='sqlite', filename=':memory:')
 
+To work with the same in-memory SQLite database from different threads, you should specify ``:sharedmemory:`` instead.
+
+.. code-block:: python
+
+      db.bind(provider='sqlite', filename=':sharedmemory:')
+
 There is no need in the parameter ``create_db`` when creating an in-memory database.
+
+
 
 .. note:: By default SQLite doesn’t check foreign key constraints. Pony always enables the foreign key support by sending the command ``PRAGMA foreign_keys = ON;`` starting with the release 0.4.9.
 
