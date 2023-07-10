@@ -960,7 +960,7 @@ Below you can find the list of available options:
             created_at = Required(datetime, sql_default='CURRENT_TIMESTAMP')
             closed = Required(bool, default=True, sql_default='1')
 
-    Specifying ``sql_default=True`` can be convenient when you have a ``Required`` attribute and the value for it is going to be calculated in the database during the INSERT command (e.g. by a trigger). ``None`` by default.
+    Specifying ``default=True`` can be convenient when you have a ``Required`` attribute and the value for it is going to be calculated in the database during the INSERT command (e.g. by a trigger). ``None`` by default.
 
 
 .. option:: sql_type
